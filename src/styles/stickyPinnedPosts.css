@@ -1,0 +1,219 @@
+/* Sticky Pinned Posts Styles */
+.sticky-pinned-posts {
+  position: -webkit-sticky; /* Safari */
+  position: sticky;
+  top: calc(72px + 1rem); /* Header height + reduced gap */
+  max-height: calc(100vh - 72px - 2rem); /* Full height - header - reduced gaps */
+  overflow-y: auto;
+  z-index: 50;
+  
+  /* Critical: Ensure the sticky element has proper positioning context */
+  align-self: flex-start; /* Prevents flex item from stretching */
+  
+  /* Ensure the element doesn't grow or shrink unexpectedly */
+  flex-shrink: 0;
+  flex-grow: 0;
+  
+  /* Ensure proper stacking context */
+  isolation: isolate;
+
+  /* Force hardware acceleration for better performance */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+
+  /* Ensure the element creates its own stacking context */
+  will-change: transform;
+
+  /* Smooth scrolling within the pinned posts */
+  scroll-behavior: smooth;
+
+  /* Better scrollbar styling */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+  
+  /* Ensure sticky works in all contexts - critical for cross-browser compatibility */
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+
+  /* Debug: Add a subtle border to verify positioning (uncomment to test) */
+  /* border-left: 3px solid rgba(34, 197, 94, 0.3) !important; */
+
+  /* Additional debugging - uncomment to test sticky behavior */
+  /* background: rgba(34, 197, 94, 0.05) !important; */
+  /* box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2) !important; */
+  
+  /* Ensure the sticky element is always visible during debugging */
+  /* border: 2px dashed #22c55e !important; */
+  /* background: rgba(34, 197, 94, 0.1) !important; */
+}
+
+/* Enhanced debugging styles - enable these to verify sticky behavior */
+.sticky-pinned-posts.debug-sticky {
+  border: 2px solid #22c55e !important;
+  background: rgba(34, 197, 94, 0.1) !important;
+  box-shadow: 
+    0 0 0 4px rgba(34, 197, 94, 0.2),
+    0 4px 8px rgba(0, 0, 0, 0.1) !important;
+  transition: all 0.3s ease !important;
+}
+
+.sticky-pinned-posts.debug-sticky::before {
+  content: "STICKY DEBUG MODE";
+  position: absolute;
+  top: -30px;
+  left: 0;
+  background: #22c55e;
+  color: white;
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: bold;
+  border-radius: 4px;
+  z-index: 1000;
+}
+
+/* Visual indicator for fallback mode */
+.sticky-pinned-posts.sticky-fallback::after {
+  content: "FIXED POSITIONING";
+  position: absolute;
+  top: -25px;
+  right: 0;
+  background: #fbbf24;
+  color: #1f2937;
+  padding: 2px 6px;
+  font-size: 10px;
+  font-weight: bold;
+  border-radius: 3px;
+  z-index: 1000;
+}
+
+/* Force sticky behavior override class - for manual testing */
+.sticky-pinned-posts.force-sticky {
+  position: -webkit-sticky !important;
+  position: sticky !important;
+  top: calc(72px + 1rem) !important;
+  z-index: 50 !important;
+}
+
+/* Force fixed behavior override class - for manual testing */
+.sticky-pinned-posts.force-fixed {
+  position: fixed !important;
+  top: calc(72px + 2rem) !important;
+  left: 2rem !important;
+  width: 320px !important;
+  z-index: 100 !important;
+}
+
+/* Webkit scrollbar styling */
+.sticky-pinned-posts::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sticky-pinned-posts::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sticky-pinned-posts::-webkit-scrollbar-thumb {
+  background-color: rgba(156, 163, 175, 0.5);
+  border-radius: 3px;
+}
+
+.sticky-pinned-posts::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(156, 163, 175, 0.7);
+}
+
+/* Fallback for browsers that don't support sticky */
+@supports not (position: sticky) {
+  .sticky-pinned-posts {
+    position: fixed;
+    top: calc(72px + 2rem);
+    left: 2rem;
+    width: 320px;
+    z-index: 100; /* Ensure it's above other content */
+  }
+}
+
+/* Additional fallback for older IE versions */
+.no-sticky .sticky-pinned-posts {
+  position: fixed;
+  top: calc(72px + 2rem);
+  left: 2rem;
+  width: 320px;
+  z-index: 100;
+}
+
+/* JavaScript-triggered fallback when sticky doesn't work */
+.sticky-pinned-posts.sticky-fallback {
+  position: fixed !important;
+  top: calc(72px + 2rem) !important;
+  left: 2rem !important;
+  width: 320px !important;
+  z-index: 100 !important;
+  
+  /* Ensure it doesn't interfere with scrolling */
+  pointer-events: auto;
+  
+  /* Add visual indicator that fallback is active */
+  border-left: 3px solid #fbbf24 !important;
+}
+
+/* Ensure fallback works on tablets too */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .sticky-pinned-posts.sticky-fallback {
+    width: 280px !important;
+  }
+}
+
+/* Tablet adjustments - show pinned posts but with reduced width */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .sticky-pinned-posts {
+    width: 280px; /* Slightly smaller on tablets */
+  }
+  
+  /* Adjust the fallback positioning for tablets */
+  @supports not (position: sticky) {
+    .sticky-pinned-posts {
+      width: 280px;
+    }
+  }
+  
+  .no-sticky .sticky-pinned-posts {
+    width: 280px;
+  }
+}
+
+/* Mobile adjustments - hide pinned posts on small screens */
+@media (max-width: 767px) {
+  .sticky-pinned-posts {
+    display: none;
+  }
+}
+
+/* High DPI displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .sticky-pinned-posts {
+    /* Ensure crisp rendering on high DPI displays */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .sticky-pinned-posts {
+    scroll-behavior: auto;
+    will-change: auto;
+    transform: none;
+    -webkit-transform: none;
+  }
+}
+
+/* Print styles */
+@media print {
+  .sticky-pinned-posts {
+    position: static !important;
+    max-height: none !important;
+    overflow: visible !important;
+    page-break-inside: avoid;
+  }
+}

@@ -1,0 +1,23 @@
+/* Main App Styles */
+.App {
+  min-height: 100vh;
+  background-color: var(--color-bg-secondary);
+}
+
+/* Spinner animation */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Remove default margins and ensure full height */
+.App,
+.App > div {
+  min-height: 100vh;
+}
+
+/* Ensure router content takes full height */
+.App > div {
+  display: flex;
+  flex-direction: column;
+}

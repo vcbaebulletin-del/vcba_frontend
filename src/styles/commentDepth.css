@@ -1,0 +1,184 @@
+/**
+ * Comment Depth Styling
+ * 
+ * CSS classes for comment threading depth visualization
+ * and depth limit indicators
+ */
+
+/* Base comment depth classes */
+.comment-depth-0 {
+  /* Root level comments */
+  border-left: none;
+}
+
+.comment-depth-1 {
+  /* First level replies */
+  border-left: 3px solid #22c55e;
+}
+
+.comment-depth-2 {
+  /* Second level replies (max depth) */
+  border-left: 3px solid #f59e0b;
+}
+
+.comment-depth-3,
+.comment-depth-4,
+.comment-depth-5 {
+  /* Deep replies (should be flattened) */
+  border-left: 3px solid #ef4444;
+}
+
+/* Comment type classes */
+.comment-root {
+  /* Top-level comments */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.comment-reply {
+  /* First level replies */
+  background-color: #f9fafb;
+  border-radius: 6px;
+}
+
+.comment-deep-reply {
+  /* Deep replies */
+  background-color: #fef3c7;
+  border-radius: 6px;
+  position: relative;
+}
+
+.comment-deep-reply::before {
+  content: "⚠️";
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  font-size: 0.75rem;
+  opacity: 0.6;
+}
+
+.comment-flattened {
+  /* Comments that should be flattened */
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+}
+
+/* Depth limit indicators */
+.depth-limit-warning {
+  background-color: #fef3c7;
+  border: 1px solid #f59e0b;
+  color: #92400e;
+  padding: 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.depth-limit-message {
+  color: #f59e0b;
+  font-size: 0.75rem;
+  font-style: italic;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.continue-thread-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #3b82f6;
+  font-size: 0.75rem;
+  text-decoration: underline;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.continue-thread-button:hover {
+  color: #1d4ed8;
+}
+
+/* Animation for depth warnings */
+@keyframes fadeInWarning {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.depth-warning-enter {
+  animation: fadeInWarning 0.3s ease-out;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .comment-depth-1,
+  .comment-depth-2,
+  .comment-depth-3,
+  .comment-depth-4,
+  .comment-depth-5 {
+    margin-left: 0.5rem !important;
+  }
+  
+  .comment-reply,
+  .comment-deep-reply {
+    padding: 0.75rem;
+  }
+  
+  .depth-limit-message {
+    font-size: 0.625rem;
+  }
+}
+
+/* Dark mode support (if needed) */
+@media (prefers-color-scheme: dark) {
+  .comment-reply {
+    background-color: #1f2937;
+  }
+  
+  .comment-deep-reply {
+    background-color: #374151;
+  }
+  
+  .comment-flattened {
+    background-color: #450a0a;
+    border-color: #7f1d1d;
+  }
+  
+  .depth-limit-warning {
+    background-color: #451a03;
+    border-color: #a16207;
+    color: #fbbf24;
+  }
+}
+
+/* Accessibility improvements */
+.comment-depth-0:focus-within,
+.comment-depth-1:focus-within,
+.comment-depth-2:focus-within {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Print styles */
+@media print {
+  .comment-depth-1,
+  .comment-depth-2,
+  .comment-depth-3 {
+    border-left: 2px solid #000;
+    margin-left: 1rem;
+  }
+  
+  .depth-limit-warning,
+  .depth-limit-message {
+    display: none;
+  }
+}

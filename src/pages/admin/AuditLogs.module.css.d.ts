@@ -1,0 +1,31 @@
+declare const styles: {
+  readonly "animate-spin": string;
+  readonly "toggle-slider-checked": string;
+  readonly "audit-table": string;
+  readonly "loading-overlay": string;
+  readonly "focus-ring": string;
+  readonly "btn-hover": string;
+  readonly "card-hover": string;
+  readonly "badge-admin": string;
+  readonly "badge-student": string;
+  readonly "badge-system": string;
+  readonly "action-create": string;
+  readonly "action-read": string;
+  readonly "action-update": string;
+  readonly "action-delete": string;
+  readonly "action-login": string;
+  readonly "action-logout": string;
+  readonly "action-export": string;
+  readonly "action-security": string;
+  readonly "metrics-grid": string;
+  readonly "actions-grid": string;
+  readonly "filter-grid": string;
+  readonly "no-print": string;
+  readonly "print-break": string;
+  readonly "sr-only": string;
+  readonly "card-border": string;
+  readonly "btn-outline": string;
+  readonly "dark-mode-card": string;
+};
+
+export default styles;

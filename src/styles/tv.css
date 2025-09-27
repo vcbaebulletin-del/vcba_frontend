@@ -1,0 +1,390 @@
+/* TV Display Styles - Optimized for large screen viewing */
+
+/* Reset and base styles for TV display */
+.tv-display {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  overflow-x: hidden;
+  color: #ffffff;
+}
+
+/* Header section with school branding */
+.tv-header {
+  background: rgba(0, 0, 0, 0.8);
+  padding: 2rem 3rem;
+  text-align: center;
+  border-bottom: 4px solid #ffffff;
+  backdrop-filter: blur(10px);
+}
+
+.tv-header h1 {
+  font-size: 4rem;
+  font-weight: bold;
+  margin: 0;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  letter-spacing: 2px;
+}
+
+.tv-header .subtitle {
+  font-size: 2rem;
+  margin: 1rem 0 0 0;
+  opacity: 0.9;
+  font-weight: 300;
+}
+
+/* Current date and time display */
+.tv-datetime {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 1.5rem 3rem;
+  text-align: center;
+  font-size: 2.5rem;
+  font-weight: 500;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Main content container - full screen */
+.tv-content {
+  padding: 0;
+  margin: 0;
+  width: 100vw;
+  height: 100vh;
+}
+
+/* Section headers */
+.tv-section-header {
+  font-size: 3.5rem;
+  font-weight: bold;
+  margin: 2rem 0 3rem 0;
+  text-align: center;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  border-bottom: 3px solid rgba(255, 255, 255, 0.5);
+  padding-bottom: 1rem;
+}
+
+/* Slideshow container */
+.tv-slideshow {
+  position: relative;
+  min-height: 600px;
+  overflow: hidden;
+}
+
+.tv-slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  opacity: 0;
+  transform: translateX(100%);
+  transition: all 0.8s ease-in-out;
+}
+
+.tv-slide.active {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.tv-slide.prev {
+  transform: translateX(-100%);
+}
+
+/* Announcement card styles */
+.tv-announcement {
+  background: rgba(255, 255, 255, 0.95);
+  color: #333333;
+  border-radius: 20px;
+  padding: 3rem;
+  margin: 2rem 0;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.tv-announcement-title {
+  font-size: 3.5rem;
+  font-weight: bold;
+  margin: 0 0 2rem 0;
+  color: #2c3e50;
+  line-height: 1.2;
+}
+
+.tv-announcement-content {
+  font-size: 2.5rem;
+  line-height: 1.6;
+  margin: 2rem 0;
+  color: #34495e;
+}
+
+.tv-announcement-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 2px solid rgba(0, 0, 0, 0.1);
+  font-size: 1.8rem;
+  color: #7f8c8d;
+}
+
+.tv-announcement-category {
+  background: #3498db;
+  color: white;
+  padding: 0.8rem 1.5rem;
+  border-radius: 25px;
+  font-weight: 600;
+  font-size: 1.6rem;
+}
+
+/* Calendar event card styles */
+.tv-calendar-event {
+  background: rgba(255, 255, 255, 0.95);
+  color: #333333;
+  border-radius: 20px;
+  padding: 3rem;
+  margin: 2rem 0;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-left: 8px solid #e74c3c;
+}
+
+.tv-event-title {
+  font-size: 3.5rem;
+  font-weight: bold;
+  margin: 0 0 2rem 0;
+  color: #2c3e50;
+  line-height: 1.2;
+}
+
+.tv-event-date {
+  font-size: 2.8rem;
+  font-weight: 600;
+  color: #e74c3c;
+  margin: 1rem 0;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.tv-event-description {
+  font-size: 2.2rem;
+  line-height: 1.6;
+  margin: 2rem 0;
+  color: #34495e;
+}
+
+.tv-event-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 2px solid rgba(0, 0, 0, 0.1);
+  font-size: 1.8rem;
+  color: #7f8c8d;
+}
+
+/* Loading and error states */
+.tv-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  font-size: 3rem;
+  color: #ffffff;
+}
+
+.tv-loading-spinner {
+  width: 80px;
+  height: 80px;
+  border: 8px solid rgba(255, 255, 255, 0.3);
+  border-top: 8px solid #ffffff;
+  border-radius: 50%;
+  animation: tv-spin 1s linear infinite;
+  margin-bottom: 2rem;
+}
+
+@keyframes tv-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.tv-error {
+  background: rgba(231, 76, 60, 0.9);
+  color: white;
+  padding: 3rem;
+  border-radius: 20px;
+  text-align: center;
+  font-size: 2.5rem;
+  margin: 2rem 0;
+}
+
+/* No content state */
+.tv-no-content {
+  text-align: center;
+  padding: 4rem;
+  font-size: 2.5rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Progress indicator for slideshow */
+.tv-progress {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 1rem;
+  z-index: 1000;
+}
+
+.tv-progress-dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  transition: all 0.3s ease;
+}
+
+.tv-progress-dot.active {
+  background: #ffffff;
+  transform: scale(1.2);
+}
+
+/* Responsive adjustments for different TV sizes */
+@media (max-width: 1366px) {
+  .tv-header h1 { font-size: 3.5rem; }
+  .tv-header .subtitle { font-size: 1.8rem; }
+  .tv-datetime { font-size: 2.2rem; }
+  .tv-section-header { font-size: 3rem; }
+  .tv-announcement-title, .tv-event-title { font-size: 3rem; }
+  .tv-announcement-content { font-size: 2.2rem; }
+  .tv-event-date { font-size: 2.5rem; }
+  .tv-event-description { font-size: 2rem; }
+}
+
+@media (min-width: 1920px) {
+  .tv-header h1 { font-size: 5rem; }
+  .tv-header .subtitle { font-size: 2.5rem; }
+  .tv-datetime { font-size: 3rem; }
+  .tv-section-header { font-size: 4rem; }
+  .tv-announcement-title, .tv-event-title { font-size: 4rem; }
+  .tv-announcement-content { font-size: 3rem; }
+  .tv-event-date { font-size: 3.2rem; }
+  .tv-event-description { font-size: 2.5rem; }
+}
+
+/* Auto-scroll animation for long content */
+.tv-auto-scroll {
+  animation: tv-scroll 20s linear infinite;
+}
+
+@keyframes tv-scroll {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-50%); }
+  100% { transform: translateY(0); }
+}
+
+/* Emergency animations */
+@keyframes emergency-flash {
+  0%, 50% { background: rgba(220, 53, 69, 0.95); }
+  25%, 75% { background: rgba(220, 53, 69, 0.8); }
+}
+
+@keyframes emergency-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+/* Hide scrollbars */
+.tv-display::-webkit-scrollbar {
+  display: none;
+}
+
+.tv-display {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Auto-scroll animation for long content */
+@keyframes autoScroll {
+  0% {
+    transform: translateY(0);
+  }
+  15% {
+    transform: translateY(0);
+  }
+  85% {
+    transform: translateY(calc(-100% + 300px));
+  }
+  100% {
+    transform: translateY(calc(-100% + 300px));
+  }
+}
+
+/* Movie credits style auto-scroll animation */
+@keyframes autoScrollCredits {
+  0% {
+    transform: translateY(0);
+  }
+  10% {
+    transform: translateY(0);
+  }
+  90% {
+    transform: translateY(calc(-100% + 200px));
+  }
+  100% {
+    transform: translateY(calc(-100% + 200px));
+  }
+}
+
+/* Slow scroll for very long content */
+@keyframes autoScrollSlow {
+  0% {
+    transform: translateY(0);
+  }
+  5% {
+    transform: translateY(0);
+  }
+  95% {
+    transform: translateY(calc(-100% + 150px));
+  }
+  100% {
+    transform: translateY(calc(-100% + 150px));
+  }
+}
+
+/* Fast scroll for medium content */
+@keyframes autoScrollFast {
+  0% {
+    transform: translateY(0);
+  }
+  15% {
+    transform: translateY(0);
+  }
+  85% {
+    transform: translateY(calc(-100% + 250px));
+  }
+  100% {
+    transform: translateY(calc(-100% + 250px));
+  }
+}
+
+/* Pulse animation for fullscreen notification */
+@keyframes pulse {
+  0% {
+    transform: translateX(-50%) scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: translateX(-50%) scale(1.05);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateX(-50%) scale(1);
+    opacity: 1;
+  }
+}

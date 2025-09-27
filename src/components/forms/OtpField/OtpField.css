@@ -1,0 +1,37 @@
+/* OTP Field Component Styles */
+.otp-field {
+  width: 100%;
+}
+
+/* Special styling for OTP input */
+.otp-field .input {
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: 0.5em;
+  font-family: var(--font-mono, 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace);
+  padding-left: 3rem; /* Account for left icon */
+  padding-right: 1rem;
+}
+
+/* Ensure proper spacing with icon */
+.otp-field .input--with-left-icon {
+  padding-left: 3rem;
+}
+
+/* Animation for successful OTP entry */
+.otp-field--success {
+  animation: pulse-success 0.6s ease-in-out;
+}
+
+@keyframes pulse-success {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
+/* Focus state enhancement for OTP */
+.otp-field .input:focus {
+  letter-spacing: 0.6em;
+  transition: letter-spacing var(--transition-fast);
+}

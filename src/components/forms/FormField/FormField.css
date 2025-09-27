@@ -1,0 +1,49 @@
+/* Form Field Component Styles */
+.form-field {
+  width: 100%;
+}
+
+/* Enhanced focus states for accessibility */
+.form-field .input:focus-within {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+}
+
+/* Error state enhancements */
+.form-field .input-container--error {
+  animation: shake 0.3s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+/* Loading state for form fields */
+.form-field--loading {
+  position: relative;
+  pointer-events: none;
+}
+
+.form-field--loading::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: var(--radius-md);
+  z-index: 1;
+}
+
+/* Success state */
+.form-field--success .input {
+  border-color: var(--color-success);
+}
+
+.form-field--success .input:focus {
+  border-color: var(--color-success);
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+}
