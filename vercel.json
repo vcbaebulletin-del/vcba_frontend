@@ -1,7 +1,14 @@
 {
   "version": 2,
-  "buildCommand": "npm run build",
-  "outputDirectory": "build",
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "build"
+      }
+    }
+  ],
   "routes": [
     {
       "src": "/static/(.*)",
@@ -23,6 +30,7 @@
     "REACT_APP_ENABLE_DARK_MODE": "true",
     "REACT_APP_ENABLE_DEBUG_LOGS": "false",
     "GENERATE_SOURCEMAP": "false",
-    "CI": "false"
+    "CI": "false",
+    "NPM_CONFIG_AUDIT": "false"
   }
 }
