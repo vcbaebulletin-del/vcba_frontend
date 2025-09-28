@@ -1,6 +1,18 @@
 // Application constants
-export const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
-export const WEBSOCKET_URL = process.env.REACT_APP_WEBSOCKET_URL || 'http://localhost:5000';
+// Production URL: https://vcbabackend-production.up.railway.app
+export const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://vcbabackend-production.up.railway.app';
+export const WEBSOCKET_URL = process.env.REACT_APP_WEBSOCKET_URL || 'https://vcbabackend-production.up.railway.app';
+
+// Debug logging for environment variables
+if (process.env.NODE_ENV === 'development') {
+  console.log('🔧 Environment Variables:', {
+    NODE_ENV: process.env.NODE_ENV,
+    REACT_APP_API_BASE_URL: process.env.REACT_APP_API_BASE_URL,
+    REACT_APP_WEBSOCKET_URL: process.env.REACT_APP_WEBSOCKET_URL,
+    API_BASE_URL,
+    WEBSOCKET_URL
+  });
+}
 
 // Utility function to get full image URL
 export const getImageUrl = (imagePath?: string | null, bustCache: boolean = false): string | null => {

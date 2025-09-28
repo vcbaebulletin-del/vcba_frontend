@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ChevronRight, Users, BookOpen, Calendar, Award } from 'lucide-react';
 import { useStudentAuth } from '../contexts/StudentAuthContext';
 import LazyImage from '../components/common/LazyImage';
+import { API_BASE_URL } from '../config/constants';
 
 interface WelcomePageData {
   background: {
@@ -42,7 +43,9 @@ const WelcomePage: React.FC = () => {
   const loadWelcomePageData = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/welcome-page/data`);
+      const response = await fetch(`${API_BASE_URL}/api/welcome-page/data`, {
+        credentials: 'include'
+      });
       const data = await response.json();
 
       if (data.success) {
