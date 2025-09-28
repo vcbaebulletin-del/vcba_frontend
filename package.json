@@ -8,8 +8,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "deploy": "chmod +x deploy.sh && ./deploy.sh",
-    "build:prod": "REACT_APP_BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ) npm run build",
-    "vercel-build": "react-scripts build"
+    "build:prod": "REACT_APP_BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ) npm run build"
   },
   "keywords": [],
   "author": "",
