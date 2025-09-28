@@ -1,10 +1,11 @@
 import axios from 'axios';
-import { ADMIN_AUTH_TOKEN_KEY } from '../config/constants';
+import { ADMIN_AUTH_TOKEN_KEY, API_BASE_URL } from '../config/constants';
 
 // Create axios instance with base configuration
 export const apiClient = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:5000',
+  baseURL: API_BASE_URL,
   timeout: 10000,
+  withCredentials: true, // Enable credentials for CORS
   headers: {
     'Content-Type': 'application/json',
   },

@@ -48,7 +48,7 @@ class WelcomePageService {
   private baseUrl: string;
 
   constructor() {
-    this.baseUrl = API_BASE_URL || 'http://localhost:5000';
+    this.baseUrl = API_BASE_URL;
   }
 
   /**
@@ -58,6 +58,7 @@ class WelcomePageService {
     try {
       const response = await fetch(`${this.baseUrl}/api/welcome-page/data`, {
         method: 'GET',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
