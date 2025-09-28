@@ -4,6 +4,7 @@ import { usePermissions } from '../../utils/permissions';
 import { User, Settings as SettingsIcon, Lock, Bell, CheckCircle, Eye, EyeOff, AlertCircle } from 'lucide-react';
 import ProfilePictureUpload from '../../components/admin/ProfilePictureUpload';
 import { AdminAuthService } from '../../services/admin-auth.service';
+import { API_BASE_URL } from '../../config/constants';
 
 const Settings: React.FC = () => {
   const { user, checkAuthStatus } = useAdminAuth();
@@ -175,7 +176,7 @@ const Settings: React.FC = () => {
           {/* Profile Picture (Left Side) */}
           <div style={{ flexShrink: 0 }}>
             <ProfilePictureUpload
-              currentPicture={user?.profilePicture ? `http://localhost:5000${user.profilePicture}` : undefined}
+              currentPicture={user?.profilePicture ? `${API_BASE_URL}${user.profilePicture}` : undefined}
               userInitials={`${user?.firstName?.charAt(0) || ''}${user?.lastName?.charAt(0) || ''}`}
               onUpload={handleProfilePictureUpload}
               onRemove={handleProfilePictureRemove}

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAdminAuth } from '../../../contexts/AdminAuthContext';
 import { useStudentAuth } from '../../../contexts/StudentAuthContext';
-import { VALIDATION_RULES } from '../../../config/constants';
+import { VALIDATION_RULES, API_BASE_URL } from '../../../config/constants';
 import { Eye, EyeOff } from 'lucide-react';
 import LazyImage from '../../../components/common/LazyImage';
 import './UnifiedLogin.css';
@@ -82,7 +82,7 @@ const UnifiedLogin: React.FC = () => {
   const loadCarouselImages = async () => {
     try {
       setCarouselLoading(true);
-      const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/welcome-page/carousel`);
+      const response = await fetch(`${API_BASE_URL}/api/welcome-page/carousel`);
       const data = await response.json();
 
       if (data.success && data.data.images.length > 0) {

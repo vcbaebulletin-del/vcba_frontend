@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { adminAnnouncementServiceWithToken, studentAnnouncementServiceWithToken } from '../../services/announcementService';
 import { useAdminAuth } from '../../contexts/AdminAuthContext';
 import { useStudentAuth } from '../../contexts/StudentAuthContext';
+import { API_BASE_URL } from '../../config/constants';
 
 const ApiTest: React.FC = () => {
   const [adminResults, setAdminResults] = useState<any>(null);
@@ -60,7 +61,7 @@ const ApiTest: React.FC = () => {
       setError(null);
       console.log('🧪 Testing Direct API...');
       
-      const response = await fetch('http://localhost:5000/api/announcements?status=published&limit=5');
+      const response = await fetch(`${API_BASE_URL}/api/announcements?status=published&limit=5`);
       const data = await response.json();
       
       console.log('🧪 Direct API Response:', data);

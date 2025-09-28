@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './WelcomePageManager.css';
+import { API_BASE_URL } from '../../config/constants';
 import {
   Upload,
   Image as ImageIcon,
@@ -214,8 +215,7 @@ const SortableCarouselItem: React.FC<SortableCarouselItemProps> = ({ image, onTo
 const WelcomePageManager: React.FC = () => {
   const { user } = useAdminAuth();
 
-  // API base URL
-  const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+  // API base URL - Now imported from constants
 
   const [activeTab, setActiveTab] = useState<'background' | 'cards' | 'carousel'>('background');
   const [loading, setLoading] = useState(false);
@@ -800,7 +800,7 @@ const WelcomePageManager: React.FC = () => {
                 <h3>Current Background</h3>
                 <div className="background-preview">
                   <img 
-                    src={`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}${currentBackground.background_image}`}
+                    src={`${API_BASE_URL}${currentBackground.background_image}`}
                     alt="Current background"
                     className="background-image"
                   />
