@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Direct Calendar Test</title>
+</head>
+<body>
+    <h1>Emergency Calendar Test</h1>
+    <div id="results"></div>
+    
+    <script>
+        async function testCalendar() {
+            const resultsDiv = document.getElementById('results');
+            
+            try {
+                resultsDiv.innerHTML = '<p>Testing calendar API...</p>';
+                
+                const response = await fetch('http://localhost:5000/api/calendar?limit=50&sort_by=event_date&sort_order=ASC');
+                const data = await response.json();
+                
+                if (data.success) {
+                    const events = data.data.events || [];
+                    const event1564 = events.find(e => e.calendar_id === 1564);
+                    const event1565 = events.find(e => e.calendar_id === 1565);
+                    
+                    resultsDiv.innerHTML = `
+                        <h2>API Test Results</h2>
+                        <p><strong>Total events:</strong> ${events.length}</p>
+                        <p><strong>Event 1564 (Earthquake):</strong> ${event1564 ? 'FOUND' : 'NOT FOUND'}</p>
+                        <p><strong>Event 1565 (Marsquake):</strong> ${event1565 ? 'FOUND' : 'NOT FOUND'}</p>
+                        
+                        ${event1564 ? `
+                        <h3>Event 1564 Details:</h3>
+                        <ul>
+                            <li>Title: ${event1564.title}</li>
+                            <li>Active: ${event1564.is_active}</li>
+                            <li>Alert: ${event1564.is_alert}</li>
+                            <li>Start: ${event1564.event_date}</li>
+                            <li>End: ${event1564.end_date}</li>
+                        </ul>
+                        ` : ''}
+                        
+                        ${event1565 ? `
+                        <h3>Event 1565 Details:</h3>
+                        <ul>
+                            <li>Title: ${event1565.title}</li>
+                            <li>Active: ${event1565.is_active}</li>
+                            <li>Alert: ${event1565.is_alert}</li>
+                            <li>Start: ${event1565.event_date}</li>
+                            <li>End: ${event1565.end_date}</li>
+                        </ul>
+                        ` : ''}
+                        
+                        <h3>Date Filtering Test:</h3>
+                        <p id="dateTest"></p>
+                    `;
+                    
+                    // Test date filtering
+                    const today = new Date();
+                    const todayString = today.getFullYear() + '-' + 
+                        String(today.getMonth() + 1).padStart(2, '0') + '-' + 
+                        String(today.getDate()).padStart(2, '0');
+                    
+                    let dateTestResults = `Today: ${todayString}<br>`;
+                    
+                    [event1564, event1565].forEach(event => {
+                        if (!event) return;
+                        
+                        const eventStart = new Date(event.event_date);
+                        const eventStartString = eventStart.getFullYear() + '-' + 
+                            String(eventStart.getMonth() + 1).padStart(2, '0') + '-' + 
+                            String(eventStart.getDate()).padStart(2, '0');
+                        
+                        const eventEndString = event.end_date ? (() => {
+                            const endDate = new Date(event.end_date);
+                            return endDate.getFullYear() + '-' + 
+                                String(endDate.getMonth() + 1).padStart(2, '0') + '-' + 
+                                String(endDate.getDate()).padStart(2, '0');
+                        })() : eventStartString;
+                        
+                        const isActive = todayString >= eventStartString && todayString <= eventEndString;
+                        
+                        dateTestResults += `<br>Event ${event.calendar_id}: ${eventStartString} to ${eventEndString} - ${isActive ? 'ACTIVE' : 'INACTIVE'}`;
+                    });
+                    
+                    document.getElementById('dateTest').innerHTML = dateTestResults;
+                    
+                } else {
+                    resultsDiv.innerHTML = `<p style="color: red;">API Error: ${data.message}</p>`;
+                }
+                
+            } catch (error) {
+                resultsDiv.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+            }
+        }
+        
+        testCalendar();
+    </script>
+</body>
+</html>

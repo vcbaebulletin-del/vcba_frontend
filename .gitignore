@@ -91,17 +91,17 @@ temp/
 ehthumbs.db
 Thumbs.db
 
-# Test and debug files
-test-*.js
-debug-*.js
-*-test.js
-*-debug.js
-test-*.html
-emergency-*.js
+# Test and debug files - COMMENTED OUT: We need these files for development
+# test-*.js
+# debug-*.js
+# *-test.js
+# *-debug.js
+# test-*.html
+# emergency-*.js
 
-# Documentation that might contain sensitive info
-*.md
-!README.md
+# Documentation that might contain sensitive info - COMMENTED OUT: We need documentation
+# *.md
+# !README.md
 
 # TypeScript
 *.tsbuildinfo
