@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fullscreen Test - TV Display</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            margin: 10px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        .button:hover {
+            background: #2980b9;
+            transform: scale(1.05);
+        }
+        .status {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            font-size: 18px;
+        }
+        .instructions {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>TV Display Fullscreen Test</h1>
+        
+        <div class="status" id="status">
+            Status: Ready for testing
+        </div>
+        
+        <div>
+            <button class="button" onclick="testCurrentWindowFullscreen()">
+                Test Current Window Fullscreen
+            </button>
+            
+            <button class="button" onclick="testNewWindowFullscreen()">
+                Test New Window Fullscreen (Like "Open TV Display")
+            </button>
+            
+            <button class="button" onclick="exitFullscreen()">
+                Exit Fullscreen
+            </button>
+        </div>
+        
+        <div class="instructions">
+            <h3>Testing Instructions:</h3>
+            <ol>
+                <li><strong>Current Window Test:</strong> Should enter fullscreen immediately</li>
+                <li><strong>New Window Test:</strong> Opens new window and attempts fullscreen</li>
+                <li><strong>Browser Compatibility:</strong> Test in Chrome, Firefox, Safari, Edge</li>
+                <li><strong>Expected Behavior:</strong> Fullscreen should activate without additional clicks</li>
+            </ol>
+            
+            <h3>Troubleshooting:</h3>
+            <ul>
+                <li>If fullscreen fails, check browser console for errors</li>
+                <li>Some browsers may block automatic fullscreen for security</li>
+                <li>Try allowing popups and fullscreen permissions</li>
+                <li>F11 should always work as manual fallback</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function updateStatus(message) {
+            document.getElementById('status').textContent = 'Status: ' + message;
+            console.log('Fullscreen Test:', message);
+        }
+
+        async function testCurrentWindowFullscreen() {
+            updateStatus('Attempting current window fullscreen...');
+            
+            try {
+                const element = document.documentElement;
+                
+                if (document.fullscreenEnabled && !document.fullscreenElement) {
+                    if (element.requestFullscreen) {
+                        await element.requestFullscreen();
+                        updateStatus('Current window fullscreen SUCCESS');
+                    } else if (element.webkitRequestFullscreen) {
+                        await element.webkitRequestFullscreen();
+                        updateStatus('Current window fullscreen SUCCESS (WebKit)');
+                    } else if (element.msRequestFullscreen) {
+                        await element.msRequestFullscreen();
+                        updateStatus('Current window fullscreen SUCCESS (MS)');
+                    } else if (element.mozRequestFullScreen) {
+                        await element.mozRequestFullScreen();
+                        updateStatus('Current window fullscreen SUCCESS (Mozilla)');
+                    } else {
+                        updateStatus('Fullscreen API not supported');
+                    }
+                } else if (document.fullscreenElement) {
+                    updateStatus('Already in fullscreen mode');
+                } else {
+                    updateStatus('Fullscreen not enabled by browser');
+                }
+            } catch (error) {
+                updateStatus('Current window fullscreen FAILED: ' + error.message);
+                console.error('Fullscreen error:', error);
+            }
+        }
+
+        function testNewWindowFullscreen() {
+            updateStatus('Opening new window for fullscreen test...');
+            
+            const testUrl = window.location.href;
+            const screenWidth = window.screen.width;
+            const screenHeight = window.screen.height;
+            
+            const windowFeatures = [
+                'scrollbars=no',
+                'resizable=no',
+                'toolbar=no',
+                'menubar=no',
+                'location=no',
+                'status=no',
+                'titlebar=no',
+                'directories=no',
+                `width=${screenWidth}`,
+                `height=${screenHeight}`,
+                'left=0',
+                'top=0'
+            ].join(',');
+            
+            const newWindow = window.open(testUrl + '?newWindow=true', 'FullscreenTest', windowFeatures);
+            
+            if (newWindow) {
+                updateStatus('New window opened, attempting fullscreen...');
+                newWindow.focus();
+                
+                setTimeout(() => {
+                    try {
+                        newWindow.postMessage('triggerFullscreen', '*');
+                    } catch (error) {
+                        console.warn('Could not communicate with new window:', error);
+                    }
+                }, 1000);
+            } else {
+                updateStatus('New window FAILED - popup blocked');
+            }
+        }
+
+        async function exitFullscreen() {
+            try {
+                if (document.fullscreenElement) {
+                    if (document.exitFullscreen) {
+                        await document.exitFullscreen();
+                    } else if (document.webkitExitFullscreen) {
+                        await document.webkitExitFullscreen();
+                    } else if (document.msExitFullscreen) {
+                        await document.msExitFullscreen();
+                    } else if (document.mozCancelFullScreen) {
+                        await document.mozCancelFullScreen();
+                    }
+                    updateStatus('Exited fullscreen');
+                } else {
+                    updateStatus('Not in fullscreen mode');
+                }
+            } catch (error) {
+                updateStatus('Exit fullscreen failed: ' + error.message);
+            }
+        }
+
+        // Listen for messages from parent window
+        window.addEventListener('message', async (event) => {
+            if (event.data === 'triggerFullscreen') {
+                await testCurrentWindowFullscreen();
+            }
+        });
+
+        // Auto-trigger fullscreen if opened as new window
+        window.addEventListener('load', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('newWindow') === 'true') {
+                updateStatus('New window loaded, auto-triggering fullscreen...');
+                setTimeout(testCurrentWindowFullscreen, 500);
+            }
+        });
+
+        // Monitor fullscreen changes
+        document.addEventListener('fullscreenchange', () => {
+            if (document.fullscreenElement) {
+                updateStatus('Entered fullscreen mode successfully');
+            } else {
+                updateStatus('Exited fullscreen mode');
+            }
+        });
+
+        // Cross-browser fullscreen change events
+        document.addEventListener('webkitfullscreenchange', () => {
+            updateStatus(document.webkitFullscreenElement ? 'Entered WebKit fullscreen' : 'Exited WebKit fullscreen');
+        });
+
+        document.addEventListener('msfullscreenchange', () => {
+            updateStatus(document.msFullscreenElement ? 'Entered MS fullscreen' : 'Exited MS fullscreen');
+        });
+
+        document.addEventListener('mozfullscreenchange', () => {
+            updateStatus(document.mozFullScreenElement ? 'Entered Mozilla fullscreen' : 'Exited Mozilla fullscreen');
+        });
+    </script>
+</body>
+</html>

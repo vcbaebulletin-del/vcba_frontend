@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sticky Positioning Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .controls { position: fixed; top: 10px; right: 10px; background: white; padding: 10px; border: 1px solid #ccc; border-radius: 5px; z-index: 9999; }
+        .controls button { margin: 5px; padding: 5px 10px; cursor: pointer; }
+        .debug-info { background: #f0f0f0; padding: 10px; margin: 10px 0; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="controls">
+        <h4>Sticky Test Controls</h4>
+        <button onclick="enableDebugMode()">Enable Debug Mode</button>
+        <button onclick="disableDebugMode()">Disable Debug Mode</button>
+        <button onclick="forceSticky()">Force Sticky</button>
+        <button onclick="forceFixed()">Force Fixed</button>
+        <button onclick="resetMode()">Reset Mode</button>
+        <button onclick="analyzeLayout()">Analyze Layout</button>
+    </div>
+
+    <div class="debug-info">
+        <h3>Sticky Positioning Test Instructions</h3>
+        <ol>
+            <li>Navigate to the NewsFeed page (/admin/newsfeed or /student/newsfeed)</li>
+            <li>Open browser console (F12)</li>
+            <li>Use the buttons above to test different modes</li>
+            <li>Scroll the page to see if pinned posts stay sticky</li>
+            <li>Check console for debugging information</li>
+        </ol>
+        
+        <h4>Console Commands:</h4>
+        <code>
+            // Enable debug mode<br>
+            document.querySelector('.sticky-pinned-posts')?.classList.add('debug-sticky');<br><br>
+            
+            // Force fallback mode<br>
+            document.querySelector('.sticky-pinned-posts')?.classList.add('sticky-fallback');<br><br>
+            
+            // Analyze layout issues<br>
+            stickyDebugAnalysis();<br>
+        </code>
+    </div>
+
+    <script>
+        function enableDebugMode() {
+            const element = document.querySelector('.sticky-pinned-posts');
+            if (element) {
+                element.classList.add('debug-sticky');
+                console.log('✅ Debug mode enabled');
+            } else {
+                alert('No sticky pinned posts element found. Navigate to NewsFeed first.');
+            }
+        }
+
+        function disableDebugMode() {
+            const element = document.querySelector('.sticky-pinned-posts');
+            if (element) {
+                element.classList.remove('debug-sticky');
+                console.log('❌ Debug mode disabled');
+            }
+        }
+
+        function forceSticky() {
+            const element = document.querySelector('.sticky-pinned-posts');
+            if (element) {
+                element.classList.remove('sticky-fallback', 'force-fixed');
+                element.classList.add('force-sticky');
+                console.log('🔧 Forced sticky positioning');
+            }
+        }
+
+        function forceFixed() {
+            const element = document.querySelector('.sticky-pinned-posts');
+            if (element) {
+                element.classList.remove('force-sticky');
+                element.classList.add('force-fixed');
+                console.log('🔧 Forced fixed positioning');
+            }
+        }
+
+        function resetMode() {
+            const element = document.querySelector('.sticky-pinned-posts');
+            if (element) {
+                element.classList.remove('debug-sticky', 'sticky-fallback', 'force-sticky', 'force-fixed');
+                console.log('🔄 Reset to default mode');
+            }
+        }
+
+        function analyzeLayout() {
+            const element = document.querySelector('.sticky-pinned-posts');
+            if (!element) {
+                alert('No sticky pinned posts element found. Navigate to NewsFeed first.');
+                return;
+            }
+
+            console.log('🔍 LAYOUT ANALYSIS:');
+            console.log('Element:', element);
+            console.log('Computed style:', window.getComputedStyle(element));
+            console.log('Bounding rect:', element.getBoundingClientRect());
+            
+            // Check parent containers
+            let parent = element.parentElement;
+            const parents = [];
+            while (parent && parent !== document.body) {
+                const style = window.getComputedStyle(parent);
+                parents.push({
+                    element: parent,
+                    tagName: parent.tagName,
+                    className: parent.className,
+                    overflow: style.overflow,
+                    overflowX: style.overflowX,
+                    overflowY: style.overflowY,
+                    position: style.position,
+                    zIndex: style.zIndex
+                });
+                parent = parent.parentElement;
+            }
+            
+            console.log('Parent hierarchy:', parents);
+            console.log('Current scroll position:', window.scrollY);
+        }
+
+        // Make functions available globally
+        window.stickyDebugAnalysis = analyzeLayout;
+    </script>
+</body>
+</html>
