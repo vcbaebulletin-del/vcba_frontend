@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from '../../components/ui';
 import { adminHttpClient } from '../../services/api.service';
+import { API_BASE_URL } from '../../config/constants';
 import {
   Download,
   FileText,
@@ -345,7 +346,7 @@ const Reports: React.FC = () => {
       };
 
       // Construct full image URL
-      const baseUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
+      const baseUrl = API_BASE_URL;
       const fullImageUrl = imagePath.startsWith('http') ? imagePath : `${baseUrl}/${imagePath}`;
       img.src = fullImageUrl;
     });
@@ -568,7 +569,7 @@ const Reports: React.FC = () => {
       }
 
       console.log('📤 Sending report request:', requestBody);
-      console.log('📤 Using API base URL:', process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000');
+      console.log('📤 Using API base URL:', API_BASE_URL);
 
       // Send request to the flexible report generation endpoint
       const response = await adminHttpClient.post<MonthlyReportData>('/api/reports/generate', requestBody);

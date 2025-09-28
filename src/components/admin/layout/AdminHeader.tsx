@@ -4,6 +4,7 @@ import { useAdminAuth } from '../../../contexts/AdminAuthContext';
 import { usePermissions } from '../../../utils/permissions';
 import NotificationBell from '../NotificationBell';
 import { BarChart3, Calendar, Newspaper, Users, Settings, School, Menu, User, LogOut, Rss, Archive, FolderTree, UserCog, MessageSquare, Upload, Shield, Layout, FileBarChart, Monitor } from 'lucide-react';
+import { API_BASE_URL } from '../../../config/constants';
 
 interface AdminHeaderProps {
   onToggleSidebar: () => void;
@@ -296,7 +297,7 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ onToggleSidebar }) => {
             }}>
               {user?.profilePicture ? (
                 <img
-                  src={`http://localhost:5000${user.profilePicture}`}
+                  src={`${API_BASE_URL}${user.profilePicture}`}
                   alt={`${user.firstName} ${user.lastName}`}
                   style={{
                     width: '100%',
@@ -393,7 +394,7 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ onToggleSidebar }) => {
                   }}>
                     {user?.profilePicture ? (
                       <img
-                        src={`http://localhost:5000${user.profilePicture}`}
+                        src={`${API_BASE_URL}${user.profilePicture}`}
                         alt={`${user.firstName} ${user.lastName}`}
                         style={{
                           width: '100%',

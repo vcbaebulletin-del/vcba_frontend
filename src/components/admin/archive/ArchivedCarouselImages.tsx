@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Search, X, RotateCcw, Trash2, Calendar, User, Image, AlertTriangle } from 'lucide-react';
 import { useAdminAuth } from '../../../contexts/AdminAuthContext';
 import { welcomePageService, CarouselImage } from '../../../services/welcomePageService';
+import { API_BASE_URL } from '../../../config/constants';
 
 interface ArchivedCarouselImagesProps {
   onRestoreSuccess?: () => void;
@@ -268,7 +269,7 @@ const ArchivedCarouselImages: React.FC<ArchivedCarouselImagesProps> = ({ onResto
                 position: 'relative'
               }}>
                 <img
-                  src={`http://localhost:5000${image.image}`}
+                  src={`${API_BASE_URL}${image.image}`}
                   alt={`Carousel image ${image.id}`}
                   style={{
                     width: '100%',

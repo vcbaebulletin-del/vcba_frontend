@@ -5,6 +5,7 @@ import SuffixDropdown, { suffixUtils } from '../common/SuffixDropdown';
 import { AdminAuthService } from '../../services/admin-auth.service';
 import { adminManagementService } from '../../services/adminManagementService';
 import { AdminAccount, AdminFormData, AdminFormErrors } from '../../types/admin.types';
+import { API_BASE_URL } from '../../config/constants';
 
 interface AdminAccountModalProps {
   isOpen: boolean;
@@ -330,7 +331,7 @@ const AdminAccountModal: React.FC<AdminAccountModalProps> = ({
                 Profile Picture
               </h3>
               <ProfilePictureUpload
-                currentPicture={formData.profile.profile_picture ? `http://localhost:5000${formData.profile.profile_picture}` : undefined}
+                currentPicture={formData.profile.profile_picture ? `${API_BASE_URL}${formData.profile.profile_picture}` : undefined}
                 userInitials={`${formData.profile.first_name?.charAt(0) || ''}${formData.profile.last_name?.charAt(0) || ''}`}
                 onUpload={handleProfilePictureUpload}
                 onRemove={handleProfilePictureRemove}

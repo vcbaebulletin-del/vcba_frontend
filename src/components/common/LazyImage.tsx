@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { API_BASE_URL } from '../../config/constants';
 
 interface LazyImageProps {
   src: string;
@@ -37,7 +38,7 @@ const LazyImage: React.FC<LazyImageProps> = ({
   const getOptimizedImageUrl = (originalSrc: string) => {
     if (!originalSrc) return '';
     
-    const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+    const apiUrl = API_BASE_URL;
     const baseUrl = originalSrc.startsWith('/') ? `${apiUrl}${originalSrc}` : originalSrc;
     
     // Don't optimize external images or if no optimization parameters
@@ -59,7 +60,7 @@ const LazyImage: React.FC<LazyImageProps> = ({
     if (placeholder) return placeholder;
     if (!originalSrc.startsWith('/')) return '';
     
-    const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+    const apiUrl = API_BASE_URL;
     const baseUrl = `${apiUrl}${originalSrc}`;
     const params = new URLSearchParams({
       w: '50',
@@ -112,7 +113,7 @@ const LazyImage: React.FC<LazyImageProps> = ({
   const generateSrcSet = (originalSrc: string) => {
     if (!originalSrc.startsWith('/') || !width) return '';
     
-    const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+    const apiUrl = API_BASE_URL;
     const baseUrl = `${apiUrl}${originalSrc}`;
     
     const sizes = [

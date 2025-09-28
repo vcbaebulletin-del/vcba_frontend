@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Search, X, RotateCcw, Trash2, Calendar, User, Image, AlertTriangle } from 'lucide-react';
 import { useAdminAuth } from '../../../contexts/AdminAuthContext';
 import { welcomePageService, WelcomeCard } from '../../../services/welcomePageService';
+import { API_BASE_URL } from '../../../config/constants';
 
 interface ArchivedWelcomeCardsProps {
   onRestoreSuccess?: () => void;
@@ -274,7 +275,7 @@ const ArchivedWelcomeCards: React.FC<ArchivedWelcomeCardsProps> = ({ onRestoreSu
                   backgroundColor: '#f3f4f6'
                 }}>
                   <img
-                    src={`http://localhost:5000${card.image}`}
+                    src={`${API_BASE_URL}${card.image}`}
                     alt={card.title}
                     style={{
                       width: '100%',

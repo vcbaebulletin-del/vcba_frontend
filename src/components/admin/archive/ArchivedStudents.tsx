@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Search, X, RotateCcw, User, Mail, Phone, GraduationCap, Calendar, UserCheck } from 'lucide-react';
 import { useAdminAuth } from '../../../contexts/AdminAuthContext';
 import { archiveService, ArchivedStudent, ArchiveFilters, ArchivePagination } from '../../../services/archiveService';
+import { API_BASE_URL } from '../../../config/constants';
 
 interface ArchivedStudentsProps {
   onRestoreSuccess?: () => void;
@@ -305,7 +306,7 @@ const ArchivedStudents: React.FC<ArchivedStudentsProps> = ({ onRestoreSuccess })
                   <div style={{ position: 'relative', flexShrink: 0 }}>
                     {student.profile?.profile_picture ? (
                       <img
-                        src={`http://localhost:5000${student.profile.profile_picture}`}
+                        src={`${API_BASE_URL}${student.profile.profile_picture}`}
                         alt={`${student.profile?.first_name || 'Student'} ${student.profile?.last_name || ''}`}
                         style={{
                           width: '60px',
