@@ -1,6 +1,6 @@
 {
   "name": "front-vcba-e-bulletin-board",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "scripts": {
     "start": "react-scripts start",
@@ -9,7 +9,7 @@
     "eject": "react-scripts eject",
     "deploy": "chmod +x deploy.sh && ./deploy.sh",
     "build:prod": "REACT_APP_BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ) npm run build",
-    "vercel-build": "CI=false react-scripts build"
+    "vercel-build": "react-scripts build"
   },
   "keywords": [],
   "author": "",
