@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { getImageUrl, API_BASE_URL, STUDENT_AUTH_TOKEN_KEY } from '../../config/constants';
 import type { User } from '../../types/auth.types';
 import { Eye, EyeOff, Lock } from 'lucide-react';
@@ -29,6 +29,16 @@ const StudentProfileSettingsModal: React.FC<StudentProfileSettingsModalProps> = 
   const [passwordLoading, setPasswordLoading] = useState(false);
   const [passwordError, setPasswordError] = useState('');
   const [passwordSuccess, setPasswordSuccess] = useState('');
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   if (!isOpen) return null;
 
@@ -135,7 +145,7 @@ const StudentProfileSettingsModal: React.FC<StudentProfileSettingsModalProps> = 
       alignItems: 'center',
       justifyContent: 'center',
       zIndex: 1000,
-      padding: '1rem'
+      padding: isMobile ? '0.5rem' : '1rem'
     }}>
       <div style={{
         backgroundColor: 'white',
@@ -148,7 +158,7 @@ const StudentProfileSettingsModal: React.FC<StudentProfileSettingsModalProps> = 
       }}>
         {/* Modal Header */}
         <div style={{
-          padding: '1.5rem',
+          padding: isMobile ? '1rem' : '1.5rem',
           borderBottom: '1px solid #e5e7eb',
           display: 'flex',
           alignItems: 'center',
@@ -156,7 +166,7 @@ const StudentProfileSettingsModal: React.FC<StudentProfileSettingsModalProps> = 
         }}>
           <h2 style={{
             margin: 0,
-            fontSize: '1.5rem',
+            fontSize: isMobile ? '1.25rem' : '1.5rem',
             fontWeight: '700',
             color: '#1f2937'
           }}>
@@ -189,10 +199,11 @@ const StudentProfileSettingsModal: React.FC<StudentProfileSettingsModalProps> = 
 
         {/* Modal Content */}
         <div style={{
-          padding: '1.5rem',
+          padding: isMobile ? '1rem' : '1.5rem',
           display: 'flex',
-          gap: '2rem',
-          alignItems: 'flex-start'
+          gap: isMobile ? '1rem' : '2rem',
+          flexDirection: isMobile ? 'column' : 'row',
+          alignItems: isMobile ? 'center' : 'flex-start'
         }}>
           {/* Profile Picture Section */}
           <div style={{
@@ -200,7 +211,7 @@ const StudentProfileSettingsModal: React.FC<StudentProfileSettingsModalProps> = 
             flexDirection: 'column',
             alignItems: 'center',
             gap: '1rem',
-            minWidth: '200px'
+            minWidth: isMobile ? 'auto' : '200px'
           }}>
             {/* Profile Picture */}
             {currentUser?.profilePicture ? (
@@ -208,8 +219,8 @@ const StudentProfileSettingsModal: React.FC<StudentProfileSettingsModalProps> = 
                 src={getImageUrl(currentUser.profilePicture) || ''}
                 alt={`${currentUser.firstName} ${currentUser.lastName}`}
                 style={{
-                  width: '150px',
-                  height: '150px',
+                  width: isMobile ? '120px' : '150px',
+                  height: isMobile ? '120px' : '150px',
                   borderRadius: '50%',
                   objectFit: 'cover',
                   border: '4px solid #e5e7eb'
@@ -221,8 +232,8 @@ const StudentProfileSettingsModal: React.FC<StudentProfileSettingsModalProps> = 
                   if (parent) {
                     parent.innerHTML = `
                       <div style="
-                        width: 150px;
-                        height: 150px;
+                        width: ${isMobile ? '120px' : '150px'};
+                        height: ${isMobile ? '120px' : '150px'};
                         border-radius: 50%;
                         background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
                         display: flex;
@@ -230,7 +241,7 @@ const StudentProfileSettingsModal: React.FC<StudentProfileSettingsModalProps> = 
                         justify-content: center;
                         color: white;
                         font-weight: 600;
-                        font-size: 3rem;
+                        font-size: ${isMobile ? '2.5rem' : '3rem'};
                         border: 4px solid #e5e7eb;
                       ">
                         ${currentUser?.firstName?.charAt(0) || ''}${currentUser?.lastName?.charAt(0) || ''}
@@ -241,8 +252,8 @@ const StudentProfileSettingsModal: React.FC<StudentProfileSettingsModalProps> = 
               />
             ) : (
               <div style={{
-                width: '150px',
-                height: '150px',
+                width: isMobile ? '120px' : '150px',
+                height: isMobile ? '120px' : '150px',
                 borderRadius: '50%',
                 background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',
                 display: 'flex',
@@ -250,7 +261,7 @@ const StudentProfileSettingsModal: React.FC<StudentProfileSettingsModalProps> = 
                 justifyContent: 'center',
                 color: 'white',
                 fontWeight: '600',
-                fontSize: '3rem',
+                fontSize: isMobile ? '2.5rem' : '3rem',
                 border: '4px solid #e5e7eb'
               }}>
                 {currentUser?.firstName?.charAt(0) || ''}{currentUser?.lastName?.charAt(0) || ''}
@@ -262,7 +273,7 @@ const StudentProfileSettingsModal: React.FC<StudentProfileSettingsModalProps> = 
             }}>
               <h3 style={{
                 margin: '0 0 0.5rem 0',
-                fontSize: '1.25rem',
+                fontSize: isMobile ? '1rem' : '1.25rem',
                 fontWeight: '600',
                 color: '#1f2937'
               }}>
@@ -289,7 +300,7 @@ const StudentProfileSettingsModal: React.FC<StudentProfileSettingsModalProps> = 
             <div>
               <h4 style={{
                 margin: '0 0 1rem 0',
-                fontSize: '1.125rem',
+                fontSize: isMobile ? '1rem' : '1.125rem',
                 fontWeight: '600',
                 color: '#1f2937',
                 borderBottom: '2px solid #22c55e',
@@ -300,13 +311,13 @@ const StudentProfileSettingsModal: React.FC<StudentProfileSettingsModalProps> = 
               
               <div style={{
                 display: 'grid',
-                gridTemplateColumns: '1fr 1fr',
+                gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
                 gap: '1rem'
               }}>
                 <div>
                   <label style={{
                     display: 'block',
-                    fontSize: '0.875rem',
+                    fontSize: isMobile ? '0.8rem' : '0.875rem',
                     fontWeight: '500',
                     color: '#374151',
                     marginBottom: '0.25rem'
@@ -314,11 +325,11 @@ const StudentProfileSettingsModal: React.FC<StudentProfileSettingsModalProps> = 
                     First Name
                   </label>
                   <div style={{
-                    padding: '0.75rem',
+                    padding: isMobile ? '0.5rem' : '0.75rem',
                     backgroundColor: '#f9fafb',
                     border: '1px solid #e5e7eb',
                     borderRadius: '8px',
-                    fontSize: '0.875rem',
+                    fontSize: isMobile ? '0.8rem' : '0.875rem',
                     color: '#1f2937'
                   }}>
                     {currentUser?.firstName || 'N/A'}
@@ -328,7 +339,7 @@ const StudentProfileSettingsModal: React.FC<StudentProfileSettingsModalProps> = 
                 <div>
                   <label style={{
                     display: 'block',
-                    fontSize: '0.875rem',
+                    fontSize: isMobile ? '0.8rem' : '0.875rem',
                     fontWeight: '500',
                     color: '#374151',
                     marginBottom: '0.25rem'
@@ -336,11 +347,11 @@ const StudentProfileSettingsModal: React.FC<StudentProfileSettingsModalProps> = 
                     Last Name
                   </label>
                   <div style={{
-                    padding: '0.75rem',
+                    padding: isMobile ? '0.5rem' : '0.75rem',
                     backgroundColor: '#f9fafb',
                     border: '1px solid #e5e7eb',
                     borderRadius: '8px',
-                    fontSize: '0.875rem',
+                    fontSize: isMobile ? '0.8rem' : '0.875rem',
                     color: '#1f2937'
                   }}>
                     {currentUser?.lastName || 'N/A'}
@@ -350,7 +361,7 @@ const StudentProfileSettingsModal: React.FC<StudentProfileSettingsModalProps> = 
                 <div>
                   <label style={{
                     display: 'block',
-                    fontSize: '0.875rem',
+                    fontSize: isMobile ? '0.8rem' : '0.875rem',
                     fontWeight: '500',
                     color: '#374151',
                     marginBottom: '0.25rem'
@@ -358,11 +369,11 @@ const StudentProfileSettingsModal: React.FC<StudentProfileSettingsModalProps> = 
                     Email
                   </label>
                   <div style={{
-                    padding: '0.75rem',
+                    padding: isMobile ? '0.5rem' : '0.75rem',
                     backgroundColor: '#f9fafb',
                     border: '1px solid #e5e7eb',
                     borderRadius: '8px',
-                    fontSize: '0.875rem',
+                    fontSize: isMobile ? '0.8rem' : '0.875rem',
                     color: '#1f2937'
                   }}>
                     {currentUser?.email || 'N/A'}
@@ -372,7 +383,7 @@ const StudentProfileSettingsModal: React.FC<StudentProfileSettingsModalProps> = 
                 <div>
                   <label style={{
                     display: 'block',
-                    fontSize: '0.875rem',
+                    fontSize: isMobile ? '0.8rem' : '0.875rem',
                     fontWeight: '500',
                     color: '#374151',
                     marginBottom: '0.25rem'
@@ -380,11 +391,11 @@ const StudentProfileSettingsModal: React.FC<StudentProfileSettingsModalProps> = 
                     Student Number
                   </label>
                   <div style={{
-                    padding: '0.75rem',
+                    padding: isMobile ? '0.5rem' : '0.75rem',
                     backgroundColor: '#f9fafb',
                     border: '1px solid #e5e7eb',
                     borderRadius: '8px',
-                    fontSize: '0.875rem',
+                    fontSize: isMobile ? '0.8rem' : '0.875rem',
                     color: '#1f2937'
                   }}>
                     {currentUser?.studentNumber || 'N/A'}
@@ -394,7 +405,7 @@ const StudentProfileSettingsModal: React.FC<StudentProfileSettingsModalProps> = 
                 <div>
                   <label style={{
                     display: 'block',
-                    fontSize: '0.875rem',
+                    fontSize: isMobile ? '0.8rem' : '0.875rem',
                     fontWeight: '500',
                     color: '#374151',
                     marginBottom: '0.25rem'
@@ -402,11 +413,11 @@ const StudentProfileSettingsModal: React.FC<StudentProfileSettingsModalProps> = 
                     Grade Level
                   </label>
                   <div style={{
-                    padding: '0.75rem',
+                    padding: isMobile ? '0.5rem' : '0.75rem',
                     backgroundColor: '#f9fafb',
                     border: '1px solid #e5e7eb',
                     borderRadius: '8px',
-                    fontSize: '0.875rem',
+                    fontSize: isMobile ? '0.8rem' : '0.875rem',
                     color: '#1f2937'
                   }}>
                     Grade {currentUser?.grade_level || 'N/A'}
@@ -416,7 +427,7 @@ const StudentProfileSettingsModal: React.FC<StudentProfileSettingsModalProps> = 
                 <div>
                   <label style={{
                     display: 'block',
-                    fontSize: '0.875rem',
+                    fontSize: isMobile ? '0.8rem' : '0.875rem',
                     fontWeight: '500',
                     color: '#374151',
                     marginBottom: '0.25rem'
@@ -424,11 +435,11 @@ const StudentProfileSettingsModal: React.FC<StudentProfileSettingsModalProps> = 
                     Phone Number
                   </label>
                   <div style={{
-                    padding: '0.75rem',
+                    padding: isMobile ? '0.5rem' : '0.75rem',
                     backgroundColor: '#f9fafb',
                     border: '1px solid #e5e7eb',
                     borderRadius: '8px',
-                    fontSize: '0.875rem',
+                    fontSize: isMobile ? '0.8rem' : '0.875rem',
                     color: '#1f2937'
                   }}>
                     {currentUser?.phoneNumber || 'N/A'}
@@ -447,7 +458,7 @@ const StudentProfileSettingsModal: React.FC<StudentProfileSettingsModalProps> = 
               }}>
                 <h4 style={{
                   margin: 0,
-                  fontSize: '1.125rem',
+                  fontSize: isMobile ? '1rem' : '1.125rem',
                   fontWeight: '600',
                   color: '#1f2937',
                   borderBottom: '2px solid #ef4444',
@@ -548,7 +559,7 @@ const StudentProfileSettingsModal: React.FC<StudentProfileSettingsModalProps> = 
                     <div>
                       <label style={{
                         display: 'block',
-                        fontSize: '0.875rem',
+                        fontSize: isMobile ? '0.8rem' : '0.875rem',
                         fontWeight: '500',
                         color: '#374151',
                         marginBottom: '0.25rem'
@@ -565,11 +576,11 @@ const StudentProfileSettingsModal: React.FC<StudentProfileSettingsModalProps> = 
                           }))}
                           style={{
                             width: '100%',
-                            padding: '0.75rem',
+                            padding: isMobile ? '0.5rem' : '0.75rem',
                             paddingRight: '2.5rem',
                             border: '1px solid #d1d5db',
                             borderRadius: '6px',
-                            fontSize: '0.875rem',
+                            fontSize: isMobile ? '0.8rem' : '0.875rem',
                             outline: 'none',
                             transition: 'border-color 0.2s ease'
                           }}
@@ -608,7 +619,7 @@ const StudentProfileSettingsModal: React.FC<StudentProfileSettingsModalProps> = 
                     <div>
                       <label style={{
                         display: 'block',
-                        fontSize: '0.875rem',
+                        fontSize: isMobile ? '0.8rem' : '0.875rem',
                         fontWeight: '500',
                         color: '#374151',
                         marginBottom: '0.25rem'
@@ -625,11 +636,11 @@ const StudentProfileSettingsModal: React.FC<StudentProfileSettingsModalProps> = 
                           }))}
                           style={{
                             width: '100%',
-                            padding: '0.75rem',
+                            padding: isMobile ? '0.5rem' : '0.75rem',
                             paddingRight: '2.5rem',
                             border: '1px solid #d1d5db',
                             borderRadius: '6px',
-                            fontSize: '0.875rem',
+                            fontSize: isMobile ? '0.8rem' : '0.875rem',
                             outline: 'none',
                             transition: 'border-color 0.2s ease'
                           }}
@@ -665,7 +676,7 @@ const StudentProfileSettingsModal: React.FC<StudentProfileSettingsModalProps> = 
                       </div>
                       <p style={{
                         margin: '0.25rem 0 0 0',
-                        fontSize: '0.75rem',
+                        fontSize: isMobile ? '0.7rem' : '0.75rem',
                         color: '#6b7280'
                       }}>
                         Must be at least 6 characters long
@@ -676,7 +687,7 @@ const StudentProfileSettingsModal: React.FC<StudentProfileSettingsModalProps> = 
                     <div>
                       <label style={{
                         display: 'block',
-                        fontSize: '0.875rem',
+                        fontSize: isMobile ? '0.8rem' : '0.875rem',
                         fontWeight: '500',
                         color: '#374151',
                         marginBottom: '0.25rem'
@@ -693,11 +704,11 @@ const StudentProfileSettingsModal: React.FC<StudentProfileSettingsModalProps> = 
                           }))}
                           style={{
                             width: '100%',
-                            padding: '0.75rem',
+                            padding: isMobile ? '0.5rem' : '0.75rem',
                             paddingRight: '2.5rem',
                             border: '1px solid #d1d5db',
                             borderRadius: '6px',
-                            fontSize: '0.875rem',
+                            fontSize: isMobile ? '0.8rem' : '0.875rem',
                             outline: 'none',
                             transition: 'border-color 0.2s ease'
                           }}
@@ -807,7 +818,7 @@ const StudentProfileSettingsModal: React.FC<StudentProfileSettingsModalProps> = 
 
         {/* Modal Footer */}
         <div style={{
-          padding: '1.5rem',
+          padding: isMobile ? '1rem' : '1.5rem',
           borderTop: '1px solid #e5e7eb',
           display: 'flex',
           justifyContent: 'flex-end'
@@ -815,12 +826,12 @@ const StudentProfileSettingsModal: React.FC<StudentProfileSettingsModalProps> = 
           <button
             onClick={onClose}
             style={{
-              padding: '0.75rem 1.5rem',
+              padding: isMobile ? '0.5rem 1rem' : '0.75rem 1.5rem',
               backgroundColor: '#22c55e',
               color: 'white',
               border: 'none',
               borderRadius: '8px',
-              fontSize: '0.875rem',
+              fontSize: isMobile ? '0.8rem' : '0.875rem',
               fontWeight: '500',
               cursor: 'pointer',
               transition: 'all 0.2s ease'
