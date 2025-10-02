@@ -190,7 +190,7 @@ const WelcomePage: React.FC = () => {
                 <h1 className="hero-title">
                   Welcome to
                   <span className="title-highlight">Villamor College</span>
-                  of Business and Arts
+                  of Business and Arts, Inc.
                 </h1>
                 
                 <p className="hero-subtitle">
