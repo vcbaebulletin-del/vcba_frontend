@@ -145,7 +145,7 @@ const WelcomePage: React.FC = () => {
               alt="Villamor College of Business and Arts"
               className="header-logo"
             />
-            <span className="header-logo-text">Villamor College of Business and Arts</span>
+            <span className="header-logo-text">Villamor College of Business and Arts, Inc.</span>
           </div>
           <button onClick={handleStudentLogin} className="header-cta-button">
             SIGN IN
@@ -214,10 +214,10 @@ const WelcomePage: React.FC = () => {
       <section className="institutional-section">
         <div className="container">
           <div className="institutional-content">
-            <h2>About Villamor College of Business and Arts</h2>
+            <h2>About Villamor College of Business and Arts, Inc.</h2>
             <div className="institutional-text">
               <p>
-                Villamor College of Business and Arts (VCBA) is a private educational institution in General Santos City.
+                Villamor College of Business and Arts, Inc. (VCBA) is a private educational institution in General Santos City.
                 Established in 2012, VCBA is committed to developing its students into highly-skilled individuals who will
                 bring pride to the country and contribute to its overall development.
               </p>
@@ -228,7 +228,7 @@ const WelcomePage: React.FC = () => {
                 and Refrigeration and Aircon Servicing, both leading to a National Certificate (NC) upon completion and assessment.
               </p>
               <p>
-                Villamor College of Business and Arts and its programs are duly recognized by the Commission on Higher
+                Villamor College of Business and Arts, Inc. and its programs are duly recognized by the Commission on Higher
                 Education (CHED), the Department of Education (DepEd), and the Technical Education and Skills Development
                 Authority (TESDA).
               </p>

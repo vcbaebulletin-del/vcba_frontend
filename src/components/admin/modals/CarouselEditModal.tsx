@@ -231,7 +231,7 @@ const CarouselEditModal: React.FC<CarouselEditModalProps> = ({
         </form>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .carousel-edit-modal {
           max-width: 600px;
           width: 90%;

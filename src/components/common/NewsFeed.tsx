@@ -132,16 +132,49 @@ const NewsFeed: React.FC<NewsFeedProps> = ({ userRole }) => {
   const [showProfileSettings, setShowProfileSettings] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
-  // Enhanced mobile detection with multiple breakpoints
+  // Enhanced mobile detection with multiple breakpoints and device-specific handling
   useEffect(() => {
     const handleResize = () => {
       const width = window.innerWidth;
-      setIsMobile(width <= 768); // Increased breakpoint for better mobile experience
+      const height = window.innerHeight;
+
+      // More comprehensive mobile detection
+      // Consider both width and device characteristics
+      const isMobileWidth = width <= 768;
+      const isSmallScreen = width <= 480; // For very small screens
+      const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+      // Set mobile state based on width and touch capability
+      setIsMobile(isMobileWidth || (width <= 1024 && isTouchDevice));
+
+      // Add CSS custom properties for responsive scaling
+      document.documentElement.style.setProperty('--viewport-width', `${width}px`);
+      document.documentElement.style.setProperty('--viewport-height', `${height}px`);
+      document.documentElement.style.setProperty('--is-small-screen', isSmallScreen ? '1' : '0');
     };
 
+    // Ensure proper viewport meta tag handling
+    const ensureViewportMeta = () => {
+      let viewportMeta = document.querySelector('meta[name="viewport"]') as HTMLMetaElement;
+      if (!viewportMeta) {
+        viewportMeta = document.createElement('meta');
+        viewportMeta.name = 'viewport';
+        document.head.appendChild(viewportMeta);
+      }
+      // Set optimal viewport settings for mobile responsiveness
+      viewportMeta.content = 'width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover';
+    };
+
+    ensureViewportMeta();
     handleResize(); // Check initial size
+
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener('orientationchange', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', handleResize);
+    };
   }, []);
 
   // Initialize server time to prevent client-side time manipulation
@@ -870,12 +903,14 @@ const NewsFeed: React.FC<NewsFeedProps> = ({ userRole }) => {
           boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)'
         }}>
           <div style={{
-            padding: isMobile ? '0 1rem' : '0 2rem',
-            height: isMobile ? '4rem' : '4.5rem', // 64px mobile, 72px desktop
+            padding: isMobile ? '0 0.75rem' : '0 2rem', // Reduced mobile padding for more space
+            height: isMobile ? '3.5rem' : '4.5rem', // 56px mobile, 72px desktop - reduced for better mobile fit
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            flexWrap: isMobile ? 'wrap' : 'nowrap'
+            flexWrap: 'nowrap', // Always nowrap to prevent layout issues
+            minWidth: 0, // Allow shrinking
+            width: '100%'
           }}>
             {/* Left Section: Logo + Page Title */}
             <div style={{
@@ -972,10 +1007,11 @@ const NewsFeed: React.FC<NewsFeedProps> = ({ userRole }) => {
             <div style={{
               display: 'flex',
               alignItems: 'center',
-              gap: isMobile ? '0.5rem' : '1rem',
+              gap: isMobile ? '0.25rem' : '1rem', // Reduced gap on mobile for more space
               minWidth: isMobile ? 'auto' : '25rem', // 400px on desktop
               justifyContent: 'flex-end',
-              flex: isMobile ? '0 0 auto' : 'none'
+              flex: isMobile ? '0 0 auto' : 'none',
+              flexShrink: 0 // Prevent shrinking of notification bell and user menu
             }}>
 
               {/* Filters Group - Hidden on mobile, shown in separate row */}
@@ -1074,10 +1110,18 @@ const NewsFeed: React.FC<NewsFeedProps> = ({ userRole }) => {
               <div style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: isMobile ? '0.5rem' : '1rem'
+                gap: isMobile ? '0.25rem' : '1rem', // Reduced gap for mobile
+                flexShrink: 0 // Prevent shrinking
               }}>
-                {/* Notification Bell - Role-aware */}
-                {currentRole === 'admin' ? <NotificationBell /> : <StudentNotificationBell />}
+                {/* Notification Bell - Role-aware with mobile optimization */}
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  minWidth: isMobile ? '2.5rem' : 'auto', // Ensure minimum touch target
+                  minHeight: isMobile ? '2.5rem' : 'auto'
+                }}>
+                  {currentRole === 'admin' ? <NotificationBell /> : <StudentNotificationBell />}
+                </div>
 
                 {/* User Dropdown */}
                 <div style={{ position: 'relative' }} data-dropdown="user-dropdown">
@@ -1359,20 +1403,24 @@ const NewsFeed: React.FC<NewsFeedProps> = ({ userRole }) => {
         {/* Mobile Search and Filters - Only shown on mobile */}
         {isMobile && (
           <div style={{
-            padding: '1rem',
+            padding: '0.75rem', // Reduced padding for more space
             background: 'white',
-            borderBottom: '1px solid #e5e7eb'
+            borderBottom: '1px solid #e5e7eb',
+            // Ensure proper mobile layout
+            width: '100%',
+            boxSizing: 'border-box'
           }}>
             {/* Mobile Search */}
-            <div style={{ position: 'relative', marginBottom: '1rem' }}>
+            <div style={{ position: 'relative', marginBottom: '0.75rem' }}>
               <Search
-                size={18}
+                size={16}
                 style={{
                   position: 'absolute',
                   left: '0.75rem',
                   top: '50%',
                   transform: 'translateY(-50%)',
-                  color: '#9ca3af'
+                  color: '#9ca3af',
+                  zIndex: 1
                 }}
               />
               <input
@@ -1382,20 +1430,21 @@ const NewsFeed: React.FC<NewsFeedProps> = ({ userRole }) => {
                 onChange={(e) => setSearchTerm(e.target.value)}
                 style={{
                   width: '100%',
-                  height: '3rem', // 48px - good touch target
-                  padding: '0 1rem 0 2.5rem',
+                  height: '2.75rem', // 44px - good touch target, slightly reduced
+                  padding: '0 0.75rem 0 2.25rem', // Reduced padding
                   border: '1px solid #d1d5db',
-                  borderRadius: '0.75rem', // 12px
+                  borderRadius: '0.5rem', // 8px - slightly reduced
                   background: '#f9fafb',
                   color: '#374151',
                   fontSize: '1rem', // 16px - prevents zoom on iOS
                   outline: 'none',
-                  transition: 'all 0.2s ease'
+                  transition: 'all 0.2s ease',
+                  boxSizing: 'border-box'
                 }}
                 onFocus={(e) => {
                   e.currentTarget.style.borderColor = '#22c55e';
                   e.currentTarget.style.background = 'white';
-                  e.currentTarget.style.boxShadow = '0 0 0 3px rgba(34, 197, 94, 0.1)';
+                  e.currentTarget.style.boxShadow = '0 0 0 2px rgba(34, 197, 94, 0.1)';
                 }}
                 onBlur={(e) => {
                   e.currentTarget.style.borderColor = '#d1d5db';
@@ -1409,27 +1458,27 @@ const NewsFeed: React.FC<NewsFeedProps> = ({ userRole }) => {
             <div style={{
               display: 'flex',
               gap: '0.5rem',
-              flexWrap: 'wrap'
+              flexWrap: 'wrap',
+              width: '100%'
             }}>
               <select
                 value={filterCategory}
                 onChange={(e) => setFilterCategory(e.target.value)}
                 style={{
                   flex: '1',
-                  minWidth: '8rem', // 128px
-                  padding: '0.875rem 1rem',
-                  border: '2px solid rgba(226, 232, 240, 0.8)',
-                  borderRadius: '0.75rem', // 12px
-                  background: 'rgba(255, 255, 255, 0.95)',
-                  backdropFilter: 'blur(10px)',
+                  minWidth: '7rem', // 112px - reduced for better fit
+                  padding: '0.75rem 0.5rem', // Reduced padding
+                  border: '1px solid #d1d5db', // Simplified border
+                  borderRadius: '0.5rem', // 8px - reduced
+                  background: 'white',
                   color: '#1f2937',
                   fontSize: '0.875rem', // 14px
                   fontWeight: '500',
                   outline: 'none',
                   cursor: 'pointer',
-                  minHeight: '3.25rem', // 52px touch target
+                  minHeight: '2.75rem', // 44px touch target - reduced
                   transition: 'all 0.2s ease',
-                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)'
+                  boxSizing: 'border-box'
                 }}
               >
                 <option value="">All Categories</option>
@@ -1450,8 +1499,8 @@ const NewsFeed: React.FC<NewsFeedProps> = ({ userRole }) => {
                 onChange={(e) => setFilterGradeLevel(e.target.value)}
                 style={{
                   flex: '1',
-                  minWidth: '7rem', // 112px
-                  padding: '0.75rem',
+                  minWidth: '6rem', // 96px - reduced for better fit
+                  padding: '0.75rem 0.5rem', // Reduced padding
                   border: '1px solid #d1d5db',
                   borderRadius: '0.5rem', // 8px
                   background: 'white',
@@ -1459,7 +1508,8 @@ const NewsFeed: React.FC<NewsFeedProps> = ({ userRole }) => {
                   fontSize: '0.875rem', // 14px
                   outline: 'none',
                   cursor: 'pointer',
-                  minHeight: '3rem' // 48px touch target
+                  minHeight: '2.75rem', // 44px touch target - reduced
+                  boxSizing: 'border-box'
                 }}
               >
                 <option value="">All Grades</option>
@@ -1475,7 +1525,7 @@ const NewsFeed: React.FC<NewsFeedProps> = ({ userRole }) => {
                     setFilterGradeLevel('');
                   }}
                   style={{
-                    padding: '0.75rem 1rem',
+                    padding: '0.75rem 0.875rem', // Reduced padding
                     border: 'none',
                     borderRadius: '0.5rem', // 8px
                     background: '#ef4444',
@@ -1484,8 +1534,10 @@ const NewsFeed: React.FC<NewsFeedProps> = ({ userRole }) => {
                     fontWeight: '500',
                     cursor: 'pointer',
                     transition: 'all 0.2s ease',
-                    minHeight: '3rem', // 48px touch target
-                    whiteSpace: 'nowrap'
+                    minHeight: '2.75rem', // 44px touch target - reduced
+                    whiteSpace: 'nowrap',
+                    flexShrink: 0, // Prevent shrinking
+                    boxSizing: 'border-box'
                   }}
                   onTouchStart={(e) => {
                     e.currentTarget.style.background = '#dc2626';
@@ -1501,13 +1553,16 @@ const NewsFeed: React.FC<NewsFeedProps> = ({ userRole }) => {
           </div>
         )}
 
-        {/* Enhanced Main Content Layout */}
+        {/* Enhanced Main Content Layout with improved mobile responsiveness */}
         <div style={{
-          padding: isMobile ? '1.25rem' : '2.5rem',
-          paddingTop: isMobile ? '1rem' : '1.5rem',
+          padding: isMobile ? '0.75rem' : '2.5rem',
+          paddingTop: isMobile ? '0.5rem' : '1.5rem',
           maxWidth: '80rem', // 1280px - increased for better content width
           margin: '0 auto',
-          width: '100%'
+          width: '100%',
+          // Ensure content doesn't get cut off on very small screens
+          minWidth: 0, // Allow shrinking
+          overflowX: 'hidden' // Prevent horizontal scroll
         }}>
           <div style={{
             display: 'flex',
@@ -1760,8 +1815,8 @@ const NewsFeed: React.FC<NewsFeedProps> = ({ userRole }) => {
                         background: Boolean(event.is_alert)
                           ? 'linear-gradient(135deg, rgba(254, 242, 242, 0.98) 0%, rgba(255, 255, 255, 0.98) 100%)'
                           : 'linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 250, 252, 0.98) 100%)',
-                        borderRadius: isMobile ? '1rem' : '1.25rem', // 16px mobile, 20px desktop
-                        padding: isMobile ? '1.25rem' : '1.75rem', // 20px mobile, 28px desktop
+                        borderRadius: isMobile ? '0.75rem' : '1.25rem', // 12px mobile, 20px desktop
+                        padding: isMobile ? '1rem' : '1.75rem', // 16px mobile, 28px desktop
                         border: Boolean(event.is_alert)
                           ? '2px solid rgba(239, 68, 68, 0.3)'
                           : '1px solid rgba(226, 232, 240, 0.6)',
@@ -1771,8 +1826,12 @@ const NewsFeed: React.FC<NewsFeedProps> = ({ userRole }) => {
                           : '0 8px 32px rgba(0, 0, 0, 0.06), 0 2px 8px rgba(0, 0, 0, 0.04)',
                         transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                         position: 'relative',
-                        margin: isMobile ? '0 0.75rem' : '0', // Increased side margins on mobile
-                        overflow: 'hidden'
+                        margin: isMobile ? '0' : '0', // Remove side margins on mobile for full width
+                        overflow: 'hidden',
+                        // Ensure proper mobile scaling
+                        width: '100%',
+                        maxWidth: '100%',
+                        boxSizing: 'border-box'
                       }}
                       role={Boolean(event.is_alert) ? "status" : undefined}
                       aria-live={Boolean(event.is_alert) ? "polite" : undefined}
@@ -2066,8 +2125,8 @@ const NewsFeed: React.FC<NewsFeedProps> = ({ userRole }) => {
                         background: Boolean(announcement.is_alert)
                           ? 'linear-gradient(135deg, rgba(254, 242, 242, 0.98) 0%, rgba(255, 255, 255, 0.98) 100%)'
                           : 'linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 250, 252, 0.98) 100%)',
-                        borderRadius: isMobile ? '1rem' : '1.25rem', // 16px mobile, 20px desktop
-                        padding: isMobile ? '1.25rem' : '1.75rem', // 20px mobile, 28px desktop
+                        borderRadius: isMobile ? '0.75rem' : '1.25rem', // 12px mobile, 20px desktop
+                        padding: isMobile ? '1rem' : '1.75rem', // 16px mobile, 28px desktop
                         border: Boolean(announcement.is_alert)
                           ? '2px solid rgba(239, 68, 68, 0.3)'
                           : '1px solid rgba(226, 232, 240, 0.6)',
@@ -2077,8 +2136,12 @@ const NewsFeed: React.FC<NewsFeedProps> = ({ userRole }) => {
                           : '0 8px 32px rgba(0, 0, 0, 0.06), 0 2px 8px rgba(0, 0, 0, 0.04)',
                         transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                         position: 'relative',
-                        margin: isMobile ? '0 0.75rem' : '0', // Increased side margins on mobile
-                        overflow: 'hidden'
+                        margin: isMobile ? '0' : '0', // Remove side margins on mobile for full width
+                        overflow: 'hidden',
+                        // Ensure proper mobile scaling
+                        width: '100%',
+                        maxWidth: '100%',
+                        boxSizing: 'border-box'
                       }}
                       role={Boolean(announcement.is_alert) ? "status" : undefined}
                       aria-live={Boolean(announcement.is_alert) ? "polite" : undefined}
@@ -2368,10 +2431,12 @@ const NewsFeed: React.FC<NewsFeedProps> = ({ userRole }) => {
                       {/* Title */}
                       <h3 style={{
                         margin: '0 0 0.75rem 0',
-                        fontSize: isMobile ? '1.25rem' : '1.5rem', // 20px mobile, 24px desktop
+                        fontSize: isMobile ? '1.125rem' : '1.5rem', // 18px mobile, 24px desktop - reduced for better mobile fit
                         fontWeight: '700',
                         color: '#1f2937',
-                        lineHeight: '1.4'
+                        lineHeight: '1.4',
+                        wordWrap: 'break-word', // Ensure long titles wrap properly
+                        overflowWrap: 'break-word'
                       }}>
                         {announcement.title}
                       </h3>
@@ -2393,7 +2458,10 @@ const NewsFeed: React.FC<NewsFeedProps> = ({ userRole }) => {
                         color: '#4b5563',
                         fontSize: isMobile ? '0.875rem' : '0.95rem', // 14px mobile, 15.2px desktop
                         lineHeight: '1.6',
-                        marginBottom: isMobile ? '0.75rem' : '1rem'
+                        marginBottom: isMobile ? '0.75rem' : '1rem',
+                        wordWrap: 'break-word', // Ensure long content wraps properly
+                        overflowWrap: 'break-word',
+                        hyphens: 'auto' // Enable hyphenation for better text flow
                       }}>
                         {announcement.content}
                       </div>
@@ -2639,15 +2707,19 @@ const NewsFeed: React.FC<NewsFeedProps> = ({ userRole }) => {
                           key={`regular-event-${event.calendar_id}`}
                           style={{
                             background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 250, 252, 0.98) 100%)',
-                            borderRadius: isMobile ? '1rem' : '1.25rem', // 16px mobile, 20px desktop
-                            padding: isMobile ? '1.25rem' : '1.75rem', // 20px mobile, 28px desktop
+                            borderRadius: isMobile ? '0.75rem' : '1.25rem', // 12px mobile, 20px desktop
+                            padding: isMobile ? '1rem' : '1.75rem', // 16px mobile, 28px desktop
                             border: '1px solid rgba(226, 232, 240, 0.6)',
                             backdropFilter: 'blur(20px)',
                             boxShadow: '0 8px 32px rgba(0, 0, 0, 0.06), 0 2px 8px rgba(0, 0, 0, 0.04)',
                             transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                             position: 'relative',
-                            margin: isMobile ? '0 0.75rem' : '0', // Increased side margins on mobile
-                            overflow: 'hidden'
+                            margin: isMobile ? '0' : '0', // Remove side margins on mobile for full width
+                            overflow: 'hidden',
+                            // Ensure proper mobile scaling
+                            width: '100%',
+                            maxWidth: '100%',
+                            boxSizing: 'border-box'
                           }}
                           onMouseEnter={(e) => {
                             e.currentTarget.style.transform = 'translateY(-4px) scale(1.01)';
@@ -3305,7 +3377,7 @@ const NewsFeed: React.FC<NewsFeedProps> = ({ userRole }) => {
         altPrefix="Announcement Image"
       />
 
-      {/* CSS Animation for Mobile Modal */}
+      {/* Enhanced CSS for Mobile Responsiveness and Animations */}
       <style>{`
         @keyframes slideUp {
           from {
@@ -3313,6 +3385,79 @@ const NewsFeed: React.FC<NewsFeedProps> = ({ userRole }) => {
           }
           to {
             transform: translateY(0);
+          }
+        }
+
+        /* Enhanced mobile responsiveness */
+        @media (max-width: 768px) {
+          /* Ensure proper text scaling on mobile */
+          .news-alert h3,
+          .news-alert h2 {
+            font-size: clamp(1rem, 4vw, 1.25rem) !important;
+            line-height: 1.3 !important;
+          }
+
+          /* Improve button touch targets */
+          button {
+            min-height: 44px !important;
+            min-width: 44px !important;
+          }
+
+          /* Prevent horizontal overflow */
+          * {
+            max-width: 100% !important;
+            box-sizing: border-box !important;
+          }
+
+          /* Improve image responsiveness */
+          img {
+            max-width: 100% !important;
+            height: auto !important;
+          }
+
+          /* Fix notification bell positioning */
+          [data-dropdown="user-dropdown"] {
+            position: relative !important;
+          }
+
+          /* Ensure proper mobile layout */
+          body {
+            overflow-x: hidden !important;
+          }
+
+          /* Improve mobile scrolling */
+          html {
+            -webkit-overflow-scrolling: touch !important;
+          }
+        }
+
+        /* Very small screens (iPhone SE, etc.) */
+        @media (max-width: 375px) {
+          .news-alert h3,
+          .news-alert h2 {
+            font-size: clamp(0.9rem, 3.5vw, 1.1rem) !important;
+          }
+
+          /* Reduce padding on very small screens */
+          .news-alert {
+            padding: 0.75rem !important;
+          }
+        }
+
+        /* Landscape orientation on mobile */
+        @media (max-width: 768px) and (orientation: landscape) {
+          /* Adjust header height for landscape */
+          header {
+            height: 3.5rem !important;
+          }
+        }
+
+        /* High DPI displays */
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+          /* Ensure crisp rendering on high DPI screens */
+          * {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
           }
         }
       `}</style>
