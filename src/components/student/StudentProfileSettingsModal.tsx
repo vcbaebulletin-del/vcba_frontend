@@ -32,12 +32,20 @@ const StudentProfileSettingsModal: React.FC<StudentProfileSettingsModalProps> = 
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
+    const mediaQuery = window.matchMedia('(max-width: 767px)');
+    const handleChange = (e: MediaQueryListEvent) => {
+      setIsMobile(e.matches);
     };
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+
+    // Set initial value
+    setIsMobile(mediaQuery.matches);
+
+    // Listen for changes
+    mediaQuery.addEventListener('change', handleChange);
+
+    return () => {
+      mediaQuery.removeEventListener('change', handleChange);
+    };
   }, []);
 
   if (!isOpen) return null;
