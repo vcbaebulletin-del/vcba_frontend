@@ -157,6 +157,30 @@ const NotificationBell: React.FC<NotificationBellProps> = ({ className = '' }) =
     return icons[type] || Bell;
   };
 
+  // Clean notification title by replacing ??? with proper text based on notification type
+  const cleanNotificationTitle = (title: string, typeId: number): string => {
+    // If title doesn't contain ???, return as is
+    if (!title.includes('???')) {
+      return title;
+    }
+
+    // Replace ??? based on notification type
+    const replacements: Record<number, string> = {
+      1: '📢', // announcement - megaphone
+      2: '🚨', // alert - siren
+      3: '💬', // comment - speech bubble
+      4: '❤️', // reaction - heart
+      5: '⚙️', // system - gear
+      6: '⏰'  // reminder - clock
+    };
+
+    // Get the replacement emoji or use a default
+    const emoji = replacements[typeId] || '🔔';
+
+    // Replace all occurrences of ??? (which can be 4 question marks)
+    return title.replace(/\?{4}/g, emoji).replace(/\?{3}/g, emoji).replace(/\?{2}/g, emoji);
+  };
+
   useEffect(() => {
     fetchNotifications();
     
@@ -178,7 +202,7 @@ const NotificationBell: React.FC<NotificationBellProps> = ({ className = '' }) =
             right: 0,
             bottom: 0,
             backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            zIndex: 999
+            zIndex: 9998 // Just below the notification panel
           }}
           onClick={() => setIsOpen(false)}
         />
@@ -259,7 +283,7 @@ const NotificationBell: React.FC<NotificationBellProps> = ({ className = '' }) =
           boxShadow: isMobile
             ? '0 0 0 1px rgba(0, 0, 0, 0.05), 0 4px 16px rgba(0, 0, 0, 0.1)' // Enhanced mobile shadow
             : '0 12px 32px rgba(0, 0, 0, 0.15)', // Enhanced desktop shadow
-          zIndex: 1000,
+          zIndex: 9999, // Increased z-index to ensure it appears above all content including scrolling newsfeed
           overflow: 'hidden',
           display: 'flex',
           flexDirection: 'column',
@@ -417,7 +441,7 @@ const NotificationBell: React.FC<NotificationBellProps> = ({ className = '' }) =
                         marginBottom: isMobile ? '0.5rem' : '0.25rem', // Increased margin on mobile
                         lineHeight: '1.4'
                       }}>
-                        {notification.title}
+                        {cleanNotificationTitle(notification.title, notification.notification_type_id)}
                       </div>
                       <div style={{
                         fontSize: isMobile ? '0.75rem' : '0.8rem', // 12px mobile, 12.8px desktop
