@@ -1848,40 +1848,42 @@ const NewsFeed: React.FC<NewsFeedProps> = ({ userRole }) => {
                           : '0 8px 32px rgba(0, 0, 0, 0.06), 0 2px 8px rgba(0, 0, 0, 0.04)';
                       }}
                     >
-                      {/* Alert Badge - Top Right Corner */}
+                      {/* Alert Badge - Top Right Corner - Mobile Responsive */}
                       {Boolean(event.is_alert) && (
                         <span
                           className="badge alert"
                           style={{
                             position: 'absolute',
-                            top: '12px',
-                            right: '12px',
+                            top: isMobile ? '8px' : '12px',
+                            right: isMobile ? '8px' : '12px',
                             background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
                             color: 'white',
-                            fontSize: '0.75rem',
+                            fontSize: isMobile ? '0.625rem' : '0.75rem', // 10px mobile, 12px desktop
                             fontWeight: '600',
-                            padding: '0.25rem 0.75rem',
+                            padding: isMobile ? '0.2rem 0.5rem' : '0.25rem 0.75rem', // Smaller padding on mobile
                             borderRadius: '20px',
                             textTransform: 'uppercase',
                             letterSpacing: '0.5px',
                             display: 'flex',
                             alignItems: 'center',
-                            gap: '0.25rem',
+                            gap: isMobile ? '0.15rem' : '0.25rem',
                             boxShadow: '0 2px 8px rgba(239, 68, 68, 0.3)',
                             zIndex: 1
                           }}
                         >
-                          <AlertTriangle size={12} color="white" />
+                          <AlertTriangle size={isMobile ? 10 : 12} color="white" />
                           ALERT
                         </span>
                       )}
 
-                      {/* Event Header - Mobile responsive */}
+                      {/* Event Header - Mobile responsive with alert badge spacing */}
                       <div style={{
                         display: 'flex',
                         alignItems: 'flex-start',
                         gap: isMobile ? '0.75rem' : '1rem',
-                        marginBottom: isMobile ? '0.75rem' : '1rem'
+                        marginBottom: isMobile ? '0.75rem' : '1rem',
+                        // Add padding-right on mobile to prevent overlap with alert badge
+                        paddingRight: isMobile && Boolean(event.is_alert) ? '4.5rem' : '0' // Space for alert badge on mobile
                       }}>
                           <img
                             src="/logo/vcba1.png"
@@ -2158,40 +2160,42 @@ const NewsFeed: React.FC<NewsFeedProps> = ({ userRole }) => {
                           : '0 8px 32px rgba(0, 0, 0, 0.06), 0 2px 8px rgba(0, 0, 0, 0.04)';
                       }}
                     >
-                      {/* Alert Badge - Top Right Corner */}
+                      {/* Alert Badge - Top Right Corner - Mobile Responsive */}
                       {Boolean(announcement.is_alert) && (
                         <span
                           className="badge alert"
                           style={{
                             position: 'absolute',
-                            top: '12px',
-                            right: '12px',
+                            top: isMobile ? '8px' : '12px',
+                            right: isMobile ? '8px' : '12px',
                             background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
                             color: 'white',
-                            fontSize: '0.75rem',
+                            fontSize: isMobile ? '0.625rem' : '0.75rem', // 10px mobile, 12px desktop
                             fontWeight: '600',
-                            padding: '0.25rem 0.75rem',
+                            padding: isMobile ? '0.2rem 0.5rem' : '0.25rem 0.75rem', // Smaller padding on mobile
                             borderRadius: '20px',
                             textTransform: 'uppercase',
                             letterSpacing: '0.5px',
                             display: 'flex',
                             alignItems: 'center',
-                            gap: '0.25rem',
+                            gap: isMobile ? '0.15rem' : '0.25rem',
                             boxShadow: '0 2px 8px rgba(239, 68, 68, 0.3)',
                             zIndex: 1
                           }}
                         >
-                          <AlertTriangle size={12} color="white" />
+                          <AlertTriangle size={isMobile ? 10 : 12} color="white" />
                           ALERT
                         </span>
                       )}
 
-                      {/* Announcement Header - Mobile responsive */}
+                      {/* Announcement Header - Mobile responsive with alert badge spacing */}
                       <div style={{
                         display: 'flex',
                         alignItems: 'flex-start',
                         gap: isMobile ? '0.75rem' : '1rem',
-                        marginBottom: isMobile ? '0.75rem' : '1rem'
+                        marginBottom: isMobile ? '0.75rem' : '1rem',
+                        // Add padding-right on mobile to prevent overlap with alert badge
+                        paddingRight: isMobile && Boolean(announcement.is_alert) ? '4.5rem' : '0' // Space for alert badge on mobile
                       }}>
                         {(() => {
                           if (Boolean(announcement.is_alert)) {
