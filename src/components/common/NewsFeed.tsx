@@ -1848,19 +1848,19 @@ const NewsFeed: React.FC<NewsFeedProps> = ({ userRole }) => {
                           : '0 8px 32px rgba(0, 0, 0, 0.06), 0 2px 8px rgba(0, 0, 0, 0.04)';
                       }}
                     >
-                      {/* Alert Badge - Top Right Corner */}
+                      {/* Alert Badge - Top Right Corner - Mobile Responsive */}
                       {Boolean(event.is_alert) && (
                         <span
                           className="badge alert"
                           style={{
                             position: 'absolute',
-                            top: '12px',
-                            right: '12px',
+                            top: isMobile ? '8px' : '12px',
+                            right: isMobile ? '8px' : '12px',
                             background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
                             color: 'white',
-                            fontSize: '0.75rem',
+                            fontSize: isMobile ? '0.625rem' : '0.75rem', // Smaller on mobile: 10px mobile, 12px desktop
                             fontWeight: '600',
-                            padding: '0.25rem 0.75rem',
+                            padding: isMobile ? '0.2rem 0.5rem' : '0.25rem 0.75rem', // Smaller padding on mobile
                             borderRadius: '20px',
                             textTransform: 'uppercase',
                             letterSpacing: '0.5px',
@@ -1871,7 +1871,7 @@ const NewsFeed: React.FC<NewsFeedProps> = ({ userRole }) => {
                             zIndex: 1
                           }}
                         >
-                          <AlertTriangle size={12} color="white" />
+                          <AlertTriangle size={isMobile ? 10 : 12} color="white" />
                           ALERT
                         </span>
                       )}
@@ -2158,19 +2158,19 @@ const NewsFeed: React.FC<NewsFeedProps> = ({ userRole }) => {
                           : '0 8px 32px rgba(0, 0, 0, 0.06), 0 2px 8px rgba(0, 0, 0, 0.04)';
                       }}
                     >
-                      {/* Alert Badge - Top Right Corner */}
+                      {/* Alert Badge - Top Right Corner - Mobile Responsive */}
                       {Boolean(announcement.is_alert) && (
                         <span
                           className="badge alert"
                           style={{
                             position: 'absolute',
-                            top: '12px',
-                            right: '12px',
+                            top: isMobile ? '8px' : '12px',
+                            right: isMobile ? '8px' : '12px',
                             background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
                             color: 'white',
-                            fontSize: '0.75rem',
+                            fontSize: isMobile ? '0.625rem' : '0.75rem', // Smaller on mobile: 10px mobile, 12px desktop
                             fontWeight: '600',
-                            padding: '0.25rem 0.75rem',
+                            padding: isMobile ? '0.2rem 0.5rem' : '0.25rem 0.75rem', // Smaller padding on mobile
                             borderRadius: '20px',
                             textTransform: 'uppercase',
                             letterSpacing: '0.5px',
@@ -2181,7 +2181,7 @@ const NewsFeed: React.FC<NewsFeedProps> = ({ userRole }) => {
                             zIndex: 1
                           }}
                         >
-                          <AlertTriangle size={12} color="white" />
+                          <AlertTriangle size={isMobile ? 10 : 12} color="white" />
                           ALERT
                         </span>
                       )}
@@ -2266,11 +2266,15 @@ const NewsFeed: React.FC<NewsFeedProps> = ({ userRole }) => {
                           }
                         })()}
 
-                        <div style={{ flex: 1 }}>
+                        <div style={{
+                          flex: 1,
+                          // Add padding on mobile to prevent overlap with alert badge
+                          paddingRight: isMobile && Boolean(announcement.is_alert) ? '4.5rem' : '0'
+                        }}>
                           <div style={{
                             display: 'flex',
                             alignItems: 'center',
-                            gap: '0.75rem',
+                            gap: isMobile ? '0.5rem' : '0.75rem', // Reduced gap on mobile
                             marginBottom: '0.75rem',
                             flexWrap: 'wrap'
                           }}>
@@ -2278,23 +2282,23 @@ const NewsFeed: React.FC<NewsFeedProps> = ({ userRole }) => {
                             {announcement.grade_level && (
                               <span style={{
                                 fontWeight: 'bold',
-                                fontSize: isMobile ? '1rem' : '1.2rem', // 16px mobile, 19.2px desktop
+                                fontSize: isMobile ? '0.875rem' : '1.2rem', // Smaller on mobile: 14px mobile, 19.2px desktop
                                 lineHeight: '1.4'
                               }}>
                                 GRADE {announcement.grade_level}
                               </span>
                             )}
 
-                            {/* Author Capsule - Fixed layout */}
+                            {/* Author Capsule - Mobile Responsive */}
                             <div style={{
                               display: 'flex',
                               alignItems: 'center',
                               gap: '0.375rem',
                               background: 'rgba(107, 114, 128, 0.1)',
-                              padding: isMobile ? '0.375rem 0.75rem' : '0.25rem 0.5rem',
+                              padding: isMobile ? '0.3rem 0.6rem' : '0.25rem 0.5rem', // Adjusted padding
                               borderRadius: '1rem',
                               border: '1px solid rgba(107, 114, 128, 0.2)',
-                              fontSize: isMobile ? '0.875rem' : '0.75rem',
+                              fontSize: isMobile ? '0.75rem' : '0.75rem', // Consistent smaller size
                               fontWeight: '500',
                               flexShrink: 0
                             }}>
