@@ -24,7 +24,7 @@ const PowerPointSlide: React.FC<PowerPointSlideProps> = ({ type, data }) => {
     if (type === 'announcement') {
       const announcement = data as Announcement;
       // Handle both single image (image_path) and multiple images (attachments/images)
-      const imageList = [];
+      const imageList: { url: string; alt: string }[] = [];
 
       // Add single image if exists
       if (announcement.image_path) {
@@ -48,7 +48,7 @@ const PowerPointSlide: React.FC<PowerPointSlideProps> = ({ type, data }) => {
     } else {
       // Calendar events - handle images from attachments
       const event = data as CalendarEvent;
-      const imageList = [];
+      const imageList: { url: string; alt: string }[] = [];
 
       // Add images from event attachments
       if ((event as any).images && Array.isArray((event as any).images)) {
