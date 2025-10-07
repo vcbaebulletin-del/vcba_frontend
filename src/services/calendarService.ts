@@ -3,6 +3,21 @@ import { AdminAuthService } from './admin-auth.service';
 import { API_ENDPOINTS, API_BASE_URL } from '../config/constants';
 import { ApiResponse } from '../types';
 
+// Calendar attachment interface
+export interface CalendarAttachment {
+  attachment_id: number;
+  calendar_id: number;
+  file_name: string;
+  file_path: string;
+  file_type: 'image' | 'video' | 'document';
+  file_size: number;
+  mime_type: string;
+  display_order: number;
+  is_primary: boolean;
+  uploaded_at: string;
+  deleted_at?: string;
+}
+
 // Types for calendar
 export interface CalendarEvent {
   calendar_id: number;
@@ -43,6 +58,10 @@ export interface CalendarEvent {
   // Recurring event properties (added by backend for recurring instances)
   is_recurring_instance?: boolean;
   original_event_id?: number;
+
+  // Image/attachment support (similar to announcements)
+  attachments?: CalendarAttachment[];
+  images?: CalendarAttachment[];
 }
 
 export interface CreateEventData {
