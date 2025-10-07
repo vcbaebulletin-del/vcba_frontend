@@ -46,8 +46,23 @@ const PowerPointSlide: React.FC<PowerPointSlideProps> = ({ type, data }) => {
 
       return imageList;
     } else {
-      // Calendar events don't have images in the current structure
-      return [];
+      // Calendar events - handle images from attachments
+      const event = data as CalendarEvent;
+      const imageList = [];
+
+      // Add images from event attachments
+      if ((event as any).images && Array.isArray((event as any).images)) {
+        (event as any).images.forEach((img: any) => {
+          if (img.file_path) {
+            imageList.push({
+              url: getImageUrl(img.file_path),
+              alt: img.file_name || event.title
+            });
+          }
+        });
+      }
+
+      return imageList;
     }
   }, [type, data]);
 

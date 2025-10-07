@@ -1911,7 +1911,7 @@ const NewsFeed: React.FC<NewsFeedProps> = ({ userRole }) => {
                                 fontSize: isMobile ? '0.875rem' : '1rem', // 14px mobile, 16px desktop
                                 lineHeight: '1.5'
                               }}>
-                                VILLAMOR COLLEGE OF BUSINESS AND ARTS
+                                VILLAMOR COLLEGE OF BUSINESS AND ARTS, INC.
                               </span>
                               {(() => {
                                 const holidayTypeName = event.category_name || 'School Event';
@@ -2769,7 +2769,7 @@ const NewsFeed: React.FC<NewsFeedProps> = ({ userRole }) => {
                                     fontSize: isMobile ? '0.875rem' : '1rem',
                                     lineHeight: '1.5'
                                   }}>
-                                    VILLAMOR COLLEGE OF BUSINESS AND ARTS
+                                    VILLAMOR COLLEGE OF BUSINESS AND ARTS, INC.
                                   </span>
                                   {(() => {
                                     const holidayTypeName = event.category_name || 'School Event';
