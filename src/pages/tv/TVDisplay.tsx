@@ -58,29 +58,48 @@ const PowerPointSlide: React.FC<PowerPointSlideProps> = ({ type, data }) => {
       const event = data as CalendarEvent;
       const imageList: { url: string; alt: string }[] = [];
 
-      // Add images from event attachments
-      if ((event as any).images && Array.isArray((event as any).images)) {
-        console.log(`🖼️ TV Display - Calendar Event ${event.calendar_id} has ${(event as any).images.length} images:`, (event as any).images);
-        (event as any).images.forEach((img: any) => {
+      // CRITICAL DEBUG: Log the entire event object to see what properties it has
+      console.log(`🔍 TV Display - Calendar Event ${event.calendar_id} FULL DATA:`, {
+        title: event.title,
+        hasImages: !!(event as any).images,
+        hasAttachments: !!event.attachments,
+        imagesType: typeof (event as any).images,
+        attachmentsType: typeof event.attachments,
+        imagesLength: (event as any).images?.length,
+        attachmentsLength: event.attachments?.length,
+        allKeys: Object.keys(event)
+      });
+
+      // Try BOTH images and attachments properties (backend sets both)
+      const imageSources = (event as any).images || event.attachments;
+
+      if (imageSources && Array.isArray(imageSources)) {
+        console.log(`🖼️ TV Display - Calendar Event ${event.calendar_id} has ${imageSources.length} images/attachments:`, imageSources);
+        imageSources.forEach((img: any) => {
           if (img.file_path) {
+            const imageUrl = getImageUrl(img.file_path);
+            console.log(`   📸 Processing image: ${img.file_name} → ${imageUrl}`);
             imageList.push({
-              url: getImageUrl(img.file_path),
+              url: imageUrl,
               alt: img.file_name || event.title
             });
+          } else {
+            console.warn(`   ⚠️ Image missing file_path:`, img);
           }
         });
       } else {
-        console.log(`⚠️ TV Display - Calendar Event ${event.calendar_id} has NO images property or it's not an array:`, {
+        console.error(`❌ TV Display - Calendar Event ${event.calendar_id} has NO images or attachments!`, {
           hasImages: !!(event as any).images,
-          imagesType: typeof (event as any).images,
-          imagesValue: (event as any).images
+          hasAttachments: !!event.attachments,
+          imagesValue: (event as any).images,
+          attachmentsValue: event.attachments
         });
       }
 
       if (imageList.length === 0) {
-        console.log(`⚠️ TV Display - Calendar Event ${event.calendar_id} has NO images`);
+        console.error(`❌ TV Display - Calendar Event ${event.calendar_id} final image list is EMPTY`);
       } else {
-        console.log(`✅ TV Display - Calendar Event ${event.calendar_id} final image list:`, imageList);
+        console.log(`✅ TV Display - Calendar Event ${event.calendar_id} final image list (${imageList.length} images):`, imageList);
       }
 
       return imageList;
@@ -950,10 +969,18 @@ const TVDisplay: React.FC = () => {
 
       selectedEvents.forEach((event) => {
         console.log(`📅 Adding calendar event slide: ${event.title} (ID: ${event.calendar_id})`);
-        console.log(`   - Has images: ${(event as any).images?.length || 0}`);
-        console.log(`   - Has attachments: ${event.attachments?.length || 0}`);
+        console.log(`   - Has images property: ${!!(event as any).images}`);
+        console.log(`   - Has attachments property: ${!!event.attachments}`);
+        console.log(`   - Images length: ${(event as any).images?.length || 0}`);
+        console.log(`   - Attachments length: ${event.attachments?.length || 0}`);
+        console.log(`   - Event object keys:`, Object.keys(event));
+
         if ((event as any).images && (event as any).images.length > 0) {
-          console.log(`   - First image path: ${(event as any).images[0].file_path}`);
+          console.log(`   - ✅ First image:`, (event as any).images[0]);
+        } else if (event.attachments && event.attachments.length > 0) {
+          console.log(`   - ✅ First attachment:`, event.attachments[0]);
+        } else {
+          console.error(`   - ❌ NO IMAGES OR ATTACHMENTS FOUND!`);
         }
 
         slides.push(
