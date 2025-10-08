@@ -28,6 +28,7 @@ const PowerPointSlide: React.FC<PowerPointSlideProps> = ({ type, data }) => {
 
       // Add single image if exists
       if (announcement.image_path) {
+        console.log(`🖼️ TV Display - Announcement ${announcement.announcement_id} has image_path:`, announcement.image_path);
         imageList.push({
           url: getImageUrl(announcement.image_path),
           alt: announcement.title
@@ -36,12 +37,19 @@ const PowerPointSlide: React.FC<PowerPointSlideProps> = ({ type, data }) => {
 
       // Add multiple images from attachments
       if (announcement.images && announcement.images.length > 0) {
+        console.log(`🖼️ TV Display - Announcement ${announcement.announcement_id} has ${announcement.images.length} images:`, announcement.images);
         announcement.images.forEach(img => {
           imageList.push({
             url: getImageUrl(img.file_path),
             alt: img.file_name || announcement.title
           });
         });
+      }
+
+      if (imageList.length === 0) {
+        console.log(`⚠️ TV Display - Announcement ${announcement.announcement_id} has NO images`);
+      } else {
+        console.log(`✅ TV Display - Announcement ${announcement.announcement_id} final image list:`, imageList);
       }
 
       return imageList;
@@ -52,6 +60,7 @@ const PowerPointSlide: React.FC<PowerPointSlideProps> = ({ type, data }) => {
 
       // Add images from event attachments
       if ((event as any).images && Array.isArray((event as any).images)) {
+        console.log(`🖼️ TV Display - Calendar Event ${event.calendar_id} has ${(event as any).images.length} images:`, (event as any).images);
         (event as any).images.forEach((img: any) => {
           if (img.file_path) {
             imageList.push({
@@ -60,6 +69,18 @@ const PowerPointSlide: React.FC<PowerPointSlideProps> = ({ type, data }) => {
             });
           }
         });
+      } else {
+        console.log(`⚠️ TV Display - Calendar Event ${event.calendar_id} has NO images property or it's not an array:`, {
+          hasImages: !!(event as any).images,
+          imagesType: typeof (event as any).images,
+          imagesValue: (event as any).images
+        });
+      }
+
+      if (imageList.length === 0) {
+        console.log(`⚠️ TV Display - Calendar Event ${event.calendar_id} has NO images`);
+      } else {
+        console.log(`✅ TV Display - Calendar Event ${event.calendar_id} final image list:`, imageList);
       }
 
       return imageList;

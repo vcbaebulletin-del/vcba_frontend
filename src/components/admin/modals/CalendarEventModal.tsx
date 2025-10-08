@@ -336,6 +336,9 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
         title: typeof submitData.title,
         description: typeof submitData.description,
         event_date: typeof submitData.event_date,
+        event_date_value: submitData.event_date,
+        end_date: typeof submitData.end_date,
+        end_date_value: submitData.end_date,
         category_id: typeof submitData.category_id,
         subcategory_id: typeof submitData.subcategory_id,
         is_recurring: typeof submitData.is_recurring,
@@ -344,6 +347,12 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
         is_published: typeof submitData.is_published,
         allow_comments: typeof submitData.allow_comments,
         is_alert: typeof submitData.is_alert
+      });
+      console.log('📅 DATE VERIFICATION - Frontend sending:', {
+        event_date: submitData.event_date,
+        end_date: submitData.end_date,
+        event_date_format: submitData.event_date?.match(/^\d{4}-\d{2}-\d{2}$/) ? 'YYYY-MM-DD ✅' : 'INVALID ❌',
+        end_date_format: submitData.end_date ? (submitData.end_date.match(/^\d{4}-\d{2}-\d{2}$/) ? 'YYYY-MM-DD ✅' : 'INVALID ❌') : 'Not provided'
       });
       console.log('📋 Pending deletes before save:', pendingDeletes);
 
