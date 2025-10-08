@@ -44,28 +44,11 @@ const PowerPointSlide: React.FC<PowerPointSlideProps> = ({ type, data }) => {
         });
       }
 
-      console.log('📢 PowerPointSlide - Announcement images:', {
-        title: announcement.title,
-        imageCount: imageList.length,
-        hasImagePath: !!announcement.image_path,
-        hasImagesArray: announcement.images?.length || 0
-      });
-
       return imageList;
     } else {
       // Calendar events - handle images from attachments
       const event = data as CalendarEvent;
       const imageList: { url: string; alt: string }[] = [];
-
-      console.log('📅 PowerPointSlide - Calendar event data:', {
-        title: event.title,
-        hasImages: !!(event as any).images,
-        imagesIsArray: Array.isArray((event as any).images),
-        imagesLength: (event as any).images?.length || 0,
-        hasAttachments: !!(event as any).attachments,
-        attachmentsLength: (event as any).attachments?.length || 0,
-        eventKeys: Object.keys(event)
-      });
 
       // Add images from event attachments
       if ((event as any).images && Array.isArray((event as any).images)) {
@@ -78,11 +61,6 @@ const PowerPointSlide: React.FC<PowerPointSlideProps> = ({ type, data }) => {
           }
         });
       }
-
-      console.log('📅 PowerPointSlide - Calendar event images:', {
-        title: event.title,
-        imageCount: imageList.length
-      });
 
       return imageList;
     }
@@ -401,6 +379,39 @@ const TVDisplay: React.FC = () => {
     error: eventsError,
     refresh: refreshEvents
   } = useCalendar(currentDate);
+
+  // DEBUG: Log fetched data
+  useEffect(() => {
+    console.log('📊 TV Display - Data fetched:', {
+      announcements: announcements?.length || 0,
+      events: events?.length || 0,
+      announcementsLoading,
+      eventsLoading,
+      announcementsError,
+      eventsError
+    });
+
+    if (announcements && announcements.length > 0) {
+      console.log('📢 Sample announcement:', {
+        id: announcements[0].announcement_id,
+        title: announcements[0].title,
+        hasImages: !!announcements[0].images,
+        imagesCount: announcements[0].images?.length || 0,
+        hasImagePath: !!announcements[0].image_path
+      });
+    }
+
+    if (events && events.length > 0) {
+      console.log('📅 Sample event:', {
+        id: events[0].calendar_id,
+        title: events[0].title,
+        hasImages: !!(events[0] as any).images,
+        imagesCount: (events[0] as any).images?.length || 0,
+        hasAttachments: !!events[0].attachments,
+        attachmentsCount: events[0].attachments?.length || 0
+      });
+    }
+  }, [announcements, events, announcementsLoading, eventsLoading]);
 
   // Subscribe to settings and content selection changes
   useEffect(() => {
@@ -867,15 +878,16 @@ const TVDisplay: React.FC = () => {
   const createSlideContent = () => {
     const slides: React.ReactNode[] = [];
 
-    // Debug logging
-    console.log('🎬 TVDisplay - Creating slide content:', {
+    // DEBUG: Log the state of data fetching and selection
+    console.log('🔍 TV Display - Creating slides:', {
       showAnnouncements: settings.showAnnouncements,
-      announcementsCount: announcements?.length || 0,
-      selectedAnnouncementsCount: selectedContent.announcements.length,
       showCalendarEvents: settings.showCalendarEvents,
+      announcementsCount: announcements?.length || 0,
       eventsCount: events?.length || 0,
-      uniqueEventsCount: uniqueEvents?.length || 0,
-      selectedEventsCount: selectedContent.calendarEvents.length
+      selectedAnnouncementsCount: selectedContent.announcements.length,
+      selectedCalendarEventsCount: selectedContent.calendarEvents.length,
+      selectedAnnouncementIds: selectedContent.announcements,
+      selectedCalendarEventIds: selectedContent.calendarEvents
     });
 
     // Add selected announcements only
@@ -885,31 +897,43 @@ const TVDisplay: React.FC = () => {
         return selectedContent.announcements.includes(announcement.announcement_id);
       });
 
-      console.log('📢 TVDisplay - Selected announcements:', selectedAnnouncements.length);
+      console.log('📢 TV Display - Selected announcements:', {
+        total: announcements.length,
+        selected: selectedAnnouncements.length,
+        selectedIds: selectedAnnouncements.map(a => a.announcement_id)
+      });
 
-      selectedAnnouncements.forEach((announcement) => (
+      selectedAnnouncements.forEach((announcement) => {
+        console.log(`📢 Adding announcement slide: ${announcement.title} (ID: ${announcement.announcement_id})`);
+        console.log(`   - Has images: ${announcement.images?.length || 0}`);
+        console.log(`   - Has image_path: ${!!announcement.image_path}`);
+
         slides.push(
           <PowerPointSlide
             key={`announcement-${announcement.announcement_id}-${refreshKey}`}
             type="announcement"
             data={announcement}
           />
-        )
-      ));
+        );
+      });
     }
 
     // Add selected events only
     const selectedEvents = getSelectedEvents();
-    console.log('📅 TVDisplay - Selected events:', selectedEvents.length);
-
     if (selectedEvents.length > 0) {
+      console.log('📅 TV Display - Selected calendar events:', {
+        total: uniqueEvents.length,
+        selected: selectedEvents.length,
+        selectedIds: selectedEvents.map(e => e.calendar_id)
+      });
+
       selectedEvents.forEach((event) => {
-        console.log('📅 TVDisplay - Event:', {
-          title: event.title,
-          calendar_id: event.calendar_id,
-          hasImages: event.images ? event.images.length : 0,
-          hasAttachments: event.attachments ? event.attachments.length : 0
-        });
+        console.log(`📅 Adding calendar event slide: ${event.title} (ID: ${event.calendar_id})`);
+        console.log(`   - Has images: ${(event as any).images?.length || 0}`);
+        console.log(`   - Has attachments: ${event.attachments?.length || 0}`);
+        if ((event as any).images && (event as any).images.length > 0) {
+          console.log(`   - First image path: ${(event as any).images[0].file_path}`);
+        }
 
         slides.push(
           <PowerPointSlide
@@ -921,7 +945,7 @@ const TVDisplay: React.FC = () => {
       });
     }
 
-    console.log('🎬 TVDisplay - Total slides created:', slides.length);
+    console.log(`✅ TV Display - Total slides created: ${slides.length}`);
     return slides;
   };
 
