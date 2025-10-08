@@ -44,11 +44,28 @@ const PowerPointSlide: React.FC<PowerPointSlideProps> = ({ type, data }) => {
         });
       }
 
+      console.log('📢 PowerPointSlide - Announcement images:', {
+        title: announcement.title,
+        imageCount: imageList.length,
+        hasImagePath: !!announcement.image_path,
+        hasImagesArray: announcement.images?.length || 0
+      });
+
       return imageList;
     } else {
       // Calendar events - handle images from attachments
       const event = data as CalendarEvent;
       const imageList: { url: string; alt: string }[] = [];
+
+      console.log('📅 PowerPointSlide - Calendar event data:', {
+        title: event.title,
+        hasImages: !!(event as any).images,
+        imagesIsArray: Array.isArray((event as any).images),
+        imagesLength: (event as any).images?.length || 0,
+        hasAttachments: !!(event as any).attachments,
+        attachmentsLength: (event as any).attachments?.length || 0,
+        eventKeys: Object.keys(event)
+      });
 
       // Add images from event attachments
       if ((event as any).images && Array.isArray((event as any).images)) {
@@ -61,6 +78,11 @@ const PowerPointSlide: React.FC<PowerPointSlideProps> = ({ type, data }) => {
           }
         });
       }
+
+      console.log('📅 PowerPointSlide - Calendar event images:', {
+        title: event.title,
+        imageCount: imageList.length
+      });
 
       return imageList;
     }
@@ -845,12 +867,25 @@ const TVDisplay: React.FC = () => {
   const createSlideContent = () => {
     const slides: React.ReactNode[] = [];
 
+    // Debug logging
+    console.log('🎬 TVDisplay - Creating slide content:', {
+      showAnnouncements: settings.showAnnouncements,
+      announcementsCount: announcements?.length || 0,
+      selectedAnnouncementsCount: selectedContent.announcements.length,
+      showCalendarEvents: settings.showCalendarEvents,
+      eventsCount: events?.length || 0,
+      uniqueEventsCount: uniqueEvents?.length || 0,
+      selectedEventsCount: selectedContent.calendarEvents.length
+    });
+
     // Add selected announcements only
     if (settings.showAnnouncements && announcements && announcements.length > 0 && selectedContent.announcements.length > 0) {
       const selectedAnnouncements = announcements.filter(announcement => {
         // Only show announcements that are explicitly selected
         return selectedContent.announcements.includes(announcement.announcement_id);
       });
+
+      console.log('📢 TVDisplay - Selected announcements:', selectedAnnouncements.length);
 
       selectedAnnouncements.forEach((announcement) => (
         slides.push(
@@ -865,18 +900,28 @@ const TVDisplay: React.FC = () => {
 
     // Add selected events only
     const selectedEvents = getSelectedEvents();
+    console.log('📅 TVDisplay - Selected events:', selectedEvents.length);
+
     if (selectedEvents.length > 0) {
-      selectedEvents.forEach((event) => (
+      selectedEvents.forEach((event) => {
+        console.log('📅 TVDisplay - Event:', {
+          title: event.title,
+          calendar_id: event.calendar_id,
+          hasImages: event.images ? event.images.length : 0,
+          hasAttachments: event.attachments ? event.attachments.length : 0
+        });
+
         slides.push(
           <PowerPointSlide
             key={`event-${event.calendar_id}-${refreshKey}`}
             type="event"
             data={event}
           />
-        )
-      ));
+        );
+      });
     }
 
+    console.log('🎬 TVDisplay - Total slides created:', slides.length);
     return slides;
   };
 
