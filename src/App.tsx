@@ -34,6 +34,7 @@ import StudentLayout from './components/student/layout/StudentLayout';
 // import StudentSettings from './pages/student/StudentSettings'; // REMOVED
 import TVDisplay from './pages/tv/TVDisplay';
 import TVControlPanel from './components/admin/tv-control/TVControlPanel';
+import TVDebug from './pages/debug/TVDebug';
 import './App.css';
 
 // Smart redirect component that redirects to the unified login page
@@ -300,6 +301,7 @@ function App() {
             {/* TV Display routes - no authentication required */}
             <Route path="/tv-display" element={<TVDisplay />} />
             <Route path="/tv" element={<TVDisplay />} />
+            <Route path="/tv-debug" element={<TVDebug />} />
 
             {/* Unified Login route - accessible from both admin and student contexts */}
             <Route path={LOGIN_ROUTE} element={
