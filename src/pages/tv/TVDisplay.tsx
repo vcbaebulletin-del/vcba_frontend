@@ -29,20 +29,26 @@ const PowerPointSlide: React.FC<PowerPointSlideProps> = ({ type, data }) => {
       // Add single image if exists
       if (announcement.image_path) {
         console.log(`🖼️ TV Display - Announcement ${announcement.announcement_id} has image_path:`, announcement.image_path);
-        imageList.push({
-          url: getImageUrl(announcement.image_path),
-          alt: announcement.title
-        });
+        const imageUrl = getImageUrl(announcement.image_path);
+        if (imageUrl) {
+          imageList.push({
+            url: imageUrl,
+            alt: announcement.title
+          });
+        }
       }
 
       // Add multiple images from attachments
       if (announcement.images && announcement.images.length > 0) {
         console.log(`🖼️ TV Display - Announcement ${announcement.announcement_id} has ${announcement.images.length} images:`, announcement.images);
         announcement.images.forEach(img => {
-          imageList.push({
-            url: getImageUrl(img.file_path),
-            alt: img.file_name || announcement.title
-          });
+          const imageUrl = getImageUrl(img.file_path);
+          if (imageUrl) {
+            imageList.push({
+              url: imageUrl,
+              alt: img.file_name || announcement.title
+            });
+          }
         });
       }
 
