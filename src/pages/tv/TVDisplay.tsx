@@ -54,7 +54,7 @@ const PowerPointSlide: React.FC<PowerPointSlideProps> = ({ type, data }) => {
 
       return imageList;
     } else {
-      // Calendar events - handle images from attachments
+      // Calendar events - handle images from attachments (EXACTLY like announcements)
       const event = data as CalendarEvent;
       const imageList: { url: string; alt: string }[] = [];
 
@@ -70,29 +70,41 @@ const PowerPointSlide: React.FC<PowerPointSlideProps> = ({ type, data }) => {
         allKeys: Object.keys(event)
       });
 
-      // Try BOTH images and attachments properties (backend sets both)
-      const imageSources = (event as any).images || event.attachments;
+      // DEFINITIVE FIX: Check BOTH images and attachments properties
+      // Backend sets both: event.images = attachments; event.attachments = attachments;
+      // Try images first (preferred), then fall back to attachments
+      let imageSources: any[] = [];
 
-      if (imageSources && Array.isArray(imageSources)) {
-        console.log(`🖼️ TV Display - Calendar Event ${event.calendar_id} has ${imageSources.length} images/attachments:`, imageSources);
-        imageSources.forEach((img: any) => {
-          if (img.file_path) {
-            const imageUrl = getImageUrl(img.file_path);
-            console.log(`   📸 Processing image: ${img.file_name} → ${imageUrl}`);
-            imageList.push({
-              url: imageUrl,
-              alt: img.file_name || event.title
-            });
-          } else {
-            console.warn(`   ⚠️ Image missing file_path:`, img);
-          }
-        });
+      if ((event as any).images && Array.isArray((event as any).images) && (event as any).images.length > 0) {
+        imageSources = (event as any).images;
+        console.log(`✅ Using 'images' property: ${imageSources.length} images found`);
+      } else if (event.attachments && Array.isArray(event.attachments) && event.attachments.length > 0) {
+        imageSources = event.attachments;
+        console.log(`✅ Using 'attachments' property: ${imageSources.length} attachments found`);
       } else {
-        console.error(`❌ TV Display - Calendar Event ${event.calendar_id} has NO images or attachments!`, {
-          hasImages: !!(event as any).images,
-          hasAttachments: !!event.attachments,
+        console.error(`❌ NO images or attachments found!`, {
           imagesValue: (event as any).images,
           attachmentsValue: event.attachments
+        });
+      }
+
+      if (imageSources.length > 0) {
+        console.log(`🖼️ TV Display - Calendar Event ${event.calendar_id} processing ${imageSources.length} images:`, imageSources);
+        imageSources.forEach((img: any, index: number) => {
+          if (img && img.file_path) {
+            const imageUrl = getImageUrl(img.file_path);
+            console.log(`   📸 Image ${index + 1}: ${img.file_name} → ${imageUrl}`);
+            if (imageUrl) {
+              imageList.push({
+                url: imageUrl,
+                alt: img.file_name || event.title
+              });
+            } else {
+              console.warn(`   ⚠️ Image ${index + 1} getImageUrl returned null for path: ${img.file_path}`);
+            }
+          } else {
+            console.warn(`   ⚠️ Image ${index + 1} missing file_path:`, img);
+          }
         });
       }
 
