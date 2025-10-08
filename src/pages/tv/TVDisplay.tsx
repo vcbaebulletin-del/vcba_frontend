@@ -442,13 +442,26 @@ const TVDisplay: React.FC = () => {
     }
 
     if (events && events.length > 0) {
-      console.log('📅 Sample event:', {
+      console.log('📅 Sample event FULL DATA:', {
         id: events[0].calendar_id,
         title: events[0].title,
         hasImages: !!(events[0] as any).images,
         imagesCount: (events[0] as any).images?.length || 0,
         hasAttachments: !!events[0].attachments,
-        attachmentsCount: events[0].attachments?.length || 0
+        attachmentsCount: events[0].attachments?.length || 0,
+        allKeys: Object.keys(events[0]),
+        imagesValue: (events[0] as any).images,
+        attachmentsValue: events[0].attachments
+      });
+
+      // Log ALL events to find which ones have images
+      console.log('📅 Checking ALL events for images:');
+      events.forEach((event, index) => {
+        const hasImages = !!(event as any).images && (event as any).images.length > 0;
+        const hasAttachments = !!event.attachments && event.attachments.length > 0;
+        if (hasImages || hasAttachments) {
+          console.log(`   ✅ Event ${index + 1}: "${event.title}" (ID: ${event.calendar_id}) - images: ${(event as any).images?.length || 0}, attachments: ${event.attachments?.length || 0}`);
+        }
       });
     }
   }, [announcements, events, announcementsLoading, eventsLoading]);
@@ -885,6 +898,13 @@ const TVDisplay: React.FC = () => {
       // Use calendar_id as the unique identifier
       if (!eventMap.has(event.calendar_id)) {
         eventMap.set(event.calendar_id, event);
+
+        // CRITICAL DEBUG: Check if images are preserved during deduplication
+        if ((event as any).images && (event as any).images.length > 0) {
+          console.log(`🖼️ [Deduplication] Event "${event.title}" (ID: ${event.calendar_id}) HAS ${(event as any).images.length} images - PRESERVED`);
+        } else if (event.attachments && event.attachments.length > 0) {
+          console.log(`🖼️ [Deduplication] Event "${event.title}" (ID: ${event.calendar_id}) HAS ${event.attachments.length} attachments - PRESERVED`);
+        }
       }
     });
 
@@ -900,6 +920,10 @@ const TVDisplay: React.FC = () => {
 
     // Debug: Log deduplication results
     console.log(`📊 TV Display - Event deduplication: ${events.length} total events → ${uniqueEventsList.length} unique events`);
+
+    // CRITICAL: Verify images are still present after deduplication
+    const eventsWithImages = uniqueEventsList.filter(e => ((e as any).images && (e as any).images.length > 0) || (e.attachments && e.attachments.length > 0)).length;
+    console.log(`🖼️ [After Deduplication] Events with images/attachments: ${eventsWithImages}/${uniqueEventsList.length}`);
 
     return uniqueEventsList;
   }, [events]);
