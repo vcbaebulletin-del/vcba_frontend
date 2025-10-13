@@ -722,7 +722,7 @@ const PostManagement: React.FC = () => {
       }}>
         <div style={{
           display: 'grid',
-          gridTemplateColumns: '120px 1fr 120px 120px 120px',
+          gridTemplateColumns: user && user.position !== 'super_admin' ? '120px 1fr 120px 120px 120px' : '1fr 120px 120px 120px',
           gap: '1rem'
         }}>
           {user && user.position !== 'super_admin' && (
