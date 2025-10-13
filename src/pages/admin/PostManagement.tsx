@@ -725,33 +725,35 @@ const PostManagement: React.FC = () => {
           gridTemplateColumns: '120px 1fr 120px 120px 120px',
           gap: '1rem'
         }}>
-          <div style={{ display: 'flex', alignItems: 'end', gap: '0.5rem' }}>
-            <button
-              onClick={handleCreateAnnouncement}
-              style={{
-                width: '120px',
-                padding: '0.75rem',
-                background: '#1268f3ff',
-                color: 'white',
-                border: 'none',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                fontWeight: '500',
-                fontSize: '0.875rem',
-                transition: 'background-color 0.2s ease'
-              }}
-              onMouseOver={(e) => {
-                e.currentTarget.style.transform = 'translateY(-1px)';
-                e.currentTarget.style.boxShadow = '0 4px 12px rgba(34, 197, 94, 0.3)';
-              }}
-              onMouseOut={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = 'none';
-              }}
-            >
-              + Create
-            </button>
-          </div>
+          {user && user.position !== 'super_admin' && (
+            <div style={{ display: 'flex', alignItems: 'end', gap: '0.5rem' }}>
+              <button
+                onClick={handleCreateAnnouncement}
+                style={{
+                  width: '120px',
+                  padding: '0.75rem',
+                  background: '#1268f3ff',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  fontWeight: '500',
+                  fontSize: '0.875rem',
+                  transition: 'background-color 0.2s ease'
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-1px)';
+                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(34, 197, 94, 0.3)';
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = 'none';
+                }}
+              >
+                + Create
+              </button>
+            </div>
+          )}
           <div style={{ gridColumn: 'span 1' }}>
             <label style={{
               display: 'block',
