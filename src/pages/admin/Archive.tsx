@@ -217,20 +217,6 @@ const Archive: React.FC = () => {
           >
             <tab.icon size={18} />
             {tab.label}
-            {tab.count > 0 && (
-              <span style={{
-                background: activeTab === tab.id ? tab.color : '#e5e7eb',
-                color: activeTab === tab.id ? 'white' : '#6b7280',
-                fontSize: '0.75rem',
-                fontWeight: '600',
-                padding: '0.25rem 0.5rem',
-                borderRadius: '12px',
-                minWidth: '20px',
-                textAlign: 'center'
-              }}>
-                {tab.count}
-              </span>
-            )}
           </button>
         ))}
       </div>
