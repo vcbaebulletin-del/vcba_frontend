@@ -58,6 +58,16 @@ const StudentManagement: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Ensure professor's grade level is set dynamically
+  useEffect(() => {
+    if (permissions.isProfessor && user?.grade_level) {
+      setFormData((prev) => ({
+        ...prev,
+        gradeLevel: user.grade_level!
+      }));
+    }
+  }, [permissions.isProfessor, user]);
+
   // Search handlers
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
@@ -1431,7 +1441,11 @@ const StudentManagement: React.FC = () => {
                   </div>
 
                   {/* Grade Level */}
-                  <div>
+                  <div
+                    style={{
+                      display: permissions.isProfessor ? 'none' : 'block'
+                    }}
+                  >
                     <label
                       style={{
                         display: 'block',
@@ -1447,7 +1461,6 @@ const StudentManagement: React.FC = () => {
                       value={formData.gradeLevel}
                       onChange={handleInputChange}
                       required
-                      disabled={permissions.isProfessor && getAvailableGradeLevels().length === 1} // Disable for professor if only one option
                       style={{
                         width: '100%',
                         padding: '0.75rem',
@@ -1970,7 +1983,11 @@ const StudentManagement: React.FC = () => {
                   </div>
 
                   {/* Grade Level */}
-                  <div>
+                  <div
+                    style={{
+                      display: permissions.isProfessor ? 'none' : 'block'
+                    }}
+                  >
                     <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#374151' }}>
                       Grade Level *
                     </label>

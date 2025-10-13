@@ -252,7 +252,7 @@ const ArchivedCategories: React.FC = () => {
               }}
             >
               <FolderTree size={16} />
-              Categories ({categoryTotal})
+              Categories
             </button>
             <button
               onClick={() => setActiveTab('subcategories')}
@@ -270,7 +270,7 @@ const ArchivedCategories: React.FC = () => {
               }}
             >
               <Tag size={16} />
-              Subcategories ({subcategoryTotal})
+              Subcategories
             </button>
           </div>
 
