@@ -806,6 +806,8 @@ const AdminCommentForm: React.FC<AdminCommentFormProps> = ({
         gap: '0.75rem',
         flexDirection: isMobile ? 'column' : 'row'
       }}>
+        {/* Temporarily commented out - Anonymous posting option for admins */}
+        {/*
         <label style={{
           display: 'flex',
           alignItems: 'center',
@@ -827,6 +829,7 @@ const AdminCommentForm: React.FC<AdminCommentFormProps> = ({
           />
           Post as Anonymous Admin
         </label>
+        */}
 
         <div style={{
           display: 'flex',
