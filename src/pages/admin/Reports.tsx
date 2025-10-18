@@ -777,7 +777,7 @@ const Reports: React.FC = () => {
 
           autoTable(doc, {
             startY: yPosition,
-            head: [['Title', 'Content', 'Posted By', 'Date', 'End Date', 'Status', 'Type', 'Attachments']],
+            head: [['Title', 'Content', 'Posted By', 'Date Created', 'End Date', 'Status', 'Type', 'Attachments']],
             body: announcementTableData,
             theme: 'striped',
             headStyles: { fillColor: [52, 152, 219], textColor: 255 },
@@ -786,7 +786,7 @@ const Reports: React.FC = () => {
               0: { cellWidth: 30 }, // Title
               1: { cellWidth: 40 }, // Content
               2: { cellWidth: 22 }, // Posted By
-              3: { cellWidth: 20 }, // Date
+              3: { cellWidth: 20 }, // Date Created
               4: { cellWidth: 20 }, // End Date
               5: { cellWidth: 18 }, // Status
               6: { cellWidth: 18 }, // Type

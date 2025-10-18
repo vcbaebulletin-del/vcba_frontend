@@ -244,7 +244,8 @@ const StudentManagement: React.FC = () => {
     const middleInitial = middleName ? middleName.charAt(0).toUpperCase() : '';
     const cleanLastName = lastName.replace(/\s+/g, '').toLowerCase();
 
-    return `${studentNumber}_${gradeLevel}_${cleanLastName}_${firstLetter}_${middleInitial}@gmail.com`;
+    // the grade level will be remove, and then we will not using @gmail.com but instead @vcba.com
+    return `${studentNumber}_${cleanLastName}_${firstLetter}_${middleInitial}@vcba.com`;
   };
 
   // Form handlers
@@ -2185,7 +2186,7 @@ const StudentManagement: React.FC = () => {
                         borderRadius: '8px',
                         fontSize: '1rem'
                       }}
-                      placeholder="e.g., 2025-0001"
+                      placeholder="e.g., 20250001"
                     />
                   </div>
 
