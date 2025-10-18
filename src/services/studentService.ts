@@ -221,6 +221,17 @@ class StudentService {
       throw new Error(error.message || 'Failed to remove student profile picture');
     }
   }
+
+  async bulkDeactivateStudents(studentIds: number[]): Promise<void> {
+    try {
+      await httpClient.post(`${API_ENDPOINTS.ADMIN.STUDENTS}/bulk-deactivate`, {
+        student_ids: studentIds
+      });
+    } catch (error: any) {
+      console.error('Error bulk deactivating students:', error);
+      throw new Error(error.message || 'Failed to bulk deactivate students');
+    }
+  }
 }
 
 export const studentService = new StudentService();

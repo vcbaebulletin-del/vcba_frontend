@@ -6,6 +6,18 @@ import { usePermissions } from '../../utils/permissions';
 import { getImageUrl } from '../../config/constants';
 import SuffixDropdown, { suffixUtils } from '../../components/common/SuffixDropdown';
 
+// Import PH address data for cascading dropdowns
+import regionsDataImport from '../../data/ph-addresses/region.json';
+import provincesDataImport from '../../data/ph-addresses/province.json';
+import citiesDataImport from '../../data/ph-addresses/city.json';
+import barangaysDataImport from '../../data/ph-addresses/barangay.json';
+
+// Type assertion for JSON imports
+const regionsData = regionsDataImport as any[];
+const provincesData = provincesDataImport as any[];
+const citiesData = citiesDataImport as any[];
+const barangaysData = barangaysDataImport as any[];
+
 const StudentManagement: React.FC = () => {
   // Auth context
   const { user } = useAdminAuth();
@@ -18,6 +30,7 @@ const StudentManagement: React.FC = () => {
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'inactive'>('active');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [selectedStudents, setSelectedStudents] = useState<number[]>([]);
 
   // Get available grade levels based on admin's position and assigned grade
   const getAvailableGradeLevels = () => {
@@ -57,6 +70,21 @@ const StudentManagement: React.FC = () => {
   const [profilePicturePreview, setProfilePicturePreview] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Address component states (for cascading dropdowns)
+  const [addressFields, setAddressFields] = useState({
+    houseNo: '',
+    street: '',
+    region: '',
+    province: '',
+    city: '',
+    barangay: ''
+  });
+
+  // Filtered address options based on selections
+  const [filteredProvinces, setFilteredProvinces] = useState<any[]>([]);
+  const [filteredCities, setFilteredCities] = useState<any[]>([]);
+  const [filteredBarangays, setFilteredBarangays] = useState<any[]>([]);
 
   // Ensure professor's grade level is set dynamically
   useEffect(() => {
@@ -240,6 +268,60 @@ const StudentManagement: React.FC = () => {
     setFormData(newFormData);
   };
 
+  // Address field handlers with cascading logic
+  const handleAddressFieldChange = (field: string, value: string) => {
+    const newAddressFields = { ...addressFields, [field]: value };
+
+    // Cascading logic: clear dependent fields when parent changes
+    if (field === 'region') {
+      newAddressFields.province = '';
+      newAddressFields.city = '';
+      newAddressFields.barangay = '';
+      // Filter provinces by selected region
+      const filtered = provincesData.filter((p: any) => p.region_code === value);
+      setFilteredProvinces(filtered);
+      setFilteredCities([]);
+      setFilteredBarangays([]);
+    } else if (field === 'province') {
+      newAddressFields.city = '';
+      newAddressFields.barangay = '';
+      // Filter cities by selected province
+      const filtered = citiesData.filter((c: any) => c.province_code === value);
+      setFilteredCities(filtered);
+      setFilteredBarangays([]);
+    } else if (field === 'city') {
+      newAddressFields.barangay = '';
+      // Filter barangays by selected city
+      const filtered = barangaysData.filter((b: any) => b.city_code === value);
+      setFilteredBarangays(filtered);
+    }
+
+    setAddressFields(newAddressFields);
+  };
+
+  // Compose address string from address fields
+  const composeAddress = () => {
+    const { houseNo, street, barangay, city, province, region } = addressFields;
+    
+    // Get display names instead of codes
+    const regionName = regionsData.find((r: any) => r.region_code === region)?.region_name || '';
+    const provinceName = provincesData.find((p: any) => p.province_code === province)?.province_name || '';
+    const cityName = citiesData.find((c: any) => c.city_code === city)?.city_name || '';
+    const barangayName = barangaysData.find((b: any) => b.brgy_code === barangay)?.brgy_name || '';
+
+    // Compose address in specified format with commas: "{houseNo} {street}, {barangay}, {city}, {province}, {region}"
+    const parts = [
+      houseNo?.trim(),
+      street?.trim(),
+      barangayName,
+      cityName,
+      provinceName,
+      regionName
+    ].filter(part => part); // Remove empty parts
+
+    return parts.join(', ').trim();
+  };
+
   const resetForm = () => {
     setFormData({
       studentNumber: '',
@@ -254,6 +336,17 @@ const StudentManagement: React.FC = () => {
       parentGuardianPhone: '',
       address: ''
     });
+    setAddressFields({
+      houseNo: '',
+      street: '',
+      region: '',
+      province: '',
+      city: '',
+      barangay: ''
+    });
+    setFilteredProvinces([]);
+    setFilteredCities([]);
+    setFilteredBarangays([]);
     setProfilePictureFile(null);
     setProfilePicturePreview(null);
   };
@@ -357,6 +450,16 @@ const StudentManagement: React.FC = () => {
         }
       }
 
+      // Compose address from address fields if any field is filled
+      const hasAddressInput = addressFields.houseNo || addressFields.street || addressFields.region || 
+                              addressFields.province || addressFields.city || addressFields.barangay;
+      const composedAddress = hasAddressInput ? composeAddress() : '';
+
+      // Validate address: at least city or barangay must be selected if any address field is filled
+      if (hasAddressInput && !addressFields.city && !addressFields.barangay) {
+        throw new Error('Please select at least a city or barangay for the address');
+      }
+
       // Prepare student data for API
       const studentData: CreateStudentRequest = {
         // Account data
@@ -375,7 +478,7 @@ const StudentManagement: React.FC = () => {
         grade_level: formData.gradeLevel,
         parent_guardian_name: formData.parentGuardianName || undefined,
         parent_guardian_phone: formData.parentGuardianPhone || undefined,
-        address: formData.address || undefined
+        address: composedAddress || undefined
       };
 
       // Debug: Log the data being sent
@@ -446,6 +549,19 @@ const StudentManagement: React.FC = () => {
       address: student.profile.address || ''
     });
 
+    // Reset address fields to empty (edit mode shows current address as label only)
+    setAddressFields({
+      houseNo: '',
+      street: '',
+      region: '',
+      province: '',
+      city: '',
+      barangay: ''
+    });
+    setFilteredProvinces([]);
+    setFilteredCities([]);
+    setFilteredBarangays([]);
+
     // Set existing profile picture preview
     setProfilePictureFile(null);
     setProfilePicturePreview(student.profile.profile_picture ? getImageUrl(student.profile.profile_picture) : null);
@@ -495,6 +611,19 @@ const StudentManagement: React.FC = () => {
       // CRITICAL: Use null (not undefined) to clear suffix in database
       const suffixForUpdate = formData.suffix === '' ? null : formData.suffix;
 
+      // Handle address update: compose new address if any field is filled, otherwise keep existing
+      const hasAddressInput = addressFields.houseNo || addressFields.street || addressFields.region || 
+                              addressFields.province || addressFields.city || addressFields.barangay;
+      let addressForUpdate = formData.address; // Keep existing by default
+      
+      if (hasAddressInput) {
+        // Validate address: at least city or barangay must be selected
+        if (!addressFields.city && !addressFields.barangay) {
+          throw new Error('Please select at least a city or barangay for the address');
+        }
+        addressForUpdate = composeAddress();
+      }
+
       const updateData: Partial<CreateStudentRequest> = {
         student_number: formData.studentNumber,
         email: formData.email,
@@ -506,7 +635,7 @@ const StudentManagement: React.FC = () => {
         grade_level: formData.gradeLevel,
         parent_guardian_name: formData.parentGuardianName || undefined,
         parent_guardian_phone: formData.parentGuardianPhone || undefined,
-        address: formData.address || undefined
+        address: addressForUpdate || undefined
       };
 
       // Debug logging for suffix field after preparation
@@ -615,6 +744,41 @@ const StudentManagement: React.FC = () => {
   const handleStatusFilterChange = (value: 'all' | 'active' | 'inactive') => {
     setFilterStatus(value);
     setCurrentPage(1);
+  };
+
+  const handleSelectAll = () => {
+    if (selectedStudents.length === filteredAndPaginatedData.students.length) {
+      setSelectedStudents([]);
+    } else {
+      setSelectedStudents(filteredAndPaginatedData.students.map(s => s.student_id));
+    }
+  };
+
+  const handleSelectStudent = (studentId: number) => {
+    if (selectedStudents.includes(studentId)) {
+      setSelectedStudents(selectedStudents.filter(id => id !== studentId));
+    } else {
+      setSelectedStudents([...selectedStudents, studentId]);
+    }
+  };
+
+  const handleBulkDeactivate = async () => {
+    if (!window.confirm(`Are you sure you want to deactivate ${selectedStudents.length} student(s)?`)) {
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      await studentService.bulkDeactivateStudents(selectedStudents);
+      alert(`Successfully deactivated ${selectedStudents.length} student(s)!`);
+      setSelectedStudents([]);
+      await loadStudents();
+    } catch (error: any) {
+      console.error('Error bulk deactivating students:', error);
+      alert(`Failed to deactivate students: ${error.message}`);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // Check permissions first
@@ -741,6 +905,32 @@ const StudentManagement: React.FC = () => {
             </button>
           )}
 
+          {/* Bulk Deactivate Button - Only for super_admin and when students are selected */}
+          {permissions.canManageStudents && selectedStudents.length > 0 && (
+            <button
+              onClick={handleBulkDeactivate}
+              disabled={isSubmitting}
+              style={{
+                background: 'linear-gradient(135deg, #dc2626 0%, #f59e0b 100%)',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                padding: '0.5rem 1rem',
+                fontSize: '0.9rem',
+                fontWeight: '600',
+                cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                opacity: isSubmitting ? 0.6 : 1,
+                transition: 'all 0.2s ease',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                whiteSpace: 'nowrap'
+              }}
+            >
+              Deactivate ({selectedStudents.length})
+            </button>
+          )}
+
           {/* Search */}
           <div style={{ flex: 1, minWidth: '300px', position: 'relative' }}>
             <div style={{ position: 'relative' }}>
@@ -862,12 +1052,23 @@ const StudentManagement: React.FC = () => {
           padding: '1rem 1.5rem',
           borderBottom: '1px solid #e8f5e8',
           display: 'grid',
-          gridTemplateColumns: '60px 1fr 2fr 2fr 1fr 1fr 1fr 150px',
+          gridTemplateColumns: '40px 60px 1fr 2fr 2fr 1fr 1fr 1fr 150px',
           gap: '1rem',
           fontWeight: '600',
           color: '#2d5016',
-          fontSize: '0.875rem'
+          fontSize: '0.875rem',
+          alignItems: 'center'
         }}>
+          {permissions.canManageStudents && (
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <input
+                type="checkbox"
+                checked={selectedStudents.length === filteredAndPaginatedData.students.length && filteredAndPaginatedData.students.length > 0}
+                onChange={handleSelectAll}
+                style={{ cursor: 'pointer', width: '16px', height: '16px' }}
+              />
+            </div>
+          )}
           <div>Photo</div>
           <div>Student #</div>
           <div>Name</div>
@@ -895,12 +1096,22 @@ const StudentManagement: React.FC = () => {
                 padding: '1rem 1.5rem',
                 borderBottom: '1px solid #f3f4f6',
                 display: 'grid',
-                gridTemplateColumns: '60px 1fr 2fr 2fr 1fr 1fr 1fr 150px',
+                gridTemplateColumns: '40px 60px 1fr 2fr 2fr 1fr 1fr 1fr 150px',
                 gap: '1rem',
                 alignItems: 'center',
                 fontSize: '0.875rem'
               }}
             >
+              {permissions.canManageStudents && (
+                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                  <input
+                    type="checkbox"
+                    checked={selectedStudents.includes(student.student_id)}
+                    onChange={() => handleSelectStudent(student.student_id)}
+                    style={{ cursor: 'pointer', width: '16px', height: '16px' }}
+                  />
+                </div>
+              )}
               <div style={{ display: 'flex', justifyContent: 'center' }}>
                 {student.profile.profile_picture ? (
                   <img
@@ -1527,26 +1738,134 @@ const StudentManagement: React.FC = () => {
                     />
                   </div>
 
-                  {/* Address */}
+                  {/* Address - Cascading Dropdowns */}
                   <div>
                     <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#374151' }}>
                       Address
                     </label>
-                    <textarea
-                      name="address"
-                      value={formData.address}
-                      onChange={handleInputChange}
-                      rows={4}
+                    
+                    {/* House No and Street */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                      <input
+                        type="text"
+                        value={addressFields.houseNo}
+                        onChange={(e) => handleAddressFieldChange('houseNo', e.target.value)}
+                        placeholder="House No."
+                        style={{
+                          width: '100%',
+                          padding: '0.75rem',
+                          border: '1px solid #d1d5db',
+                          borderRadius: '8px',
+                          fontSize: '0.875rem'
+                        }}
+                      />
+                      <input
+                        type="text"
+                        value={addressFields.street}
+                        onChange={(e) => handleAddressFieldChange('street', e.target.value)}
+                        placeholder="Street"
+                        style={{
+                          width: '100%',
+                          padding: '0.75rem',
+                          border: '1px solid #d1d5db',
+                          borderRadius: '8px',
+                          fontSize: '0.875rem'
+                        }}
+                      />
+                    </div>
+
+                    {/* Region */}
+                    <select
+                      value={addressFields.region}
+                      onChange={(e) => handleAddressFieldChange('region', e.target.value)}
                       style={{
                         width: '100%',
                         padding: '0.75rem',
                         border: '1px solid #d1d5db',
                         borderRadius: '8px',
-                        fontSize: '1rem',
-                        resize: 'vertical'
+                        fontSize: '0.875rem',
+                        marginBottom: '0.5rem',
+                        backgroundColor: 'white'
                       }}
-                      placeholder="Complete address"
-                    />
+                    >
+                      <option value="">Select Region</option>
+                      {regionsData.map((region: any) => (
+                        <option key={region.region_code} value={region.region_code}>
+                          {region.region_name}
+                        </option>
+                      ))}
+                    </select>
+
+                    {/* Province */}
+                    <select
+                      value={addressFields.province}
+                      onChange={(e) => handleAddressFieldChange('province', e.target.value)}
+                      disabled={!addressFields.region}
+                      style={{
+                        width: '100%',
+                        padding: '0.75rem',
+                        border: '1px solid #d1d5db',
+                        borderRadius: '8px',
+                        fontSize: '0.875rem',
+                        marginBottom: '0.5rem',
+                        backgroundColor: addressFields.region ? 'white' : '#f9fafb',
+                        cursor: addressFields.region ? 'pointer' : 'not-allowed'
+                      }}
+                    >
+                      <option value="">Select Province</option>
+                      {filteredProvinces.map((province: any) => (
+                        <option key={province.province_code} value={province.province_code}>
+                          {province.province_name}
+                        </option>
+                      ))}
+                    </select>
+
+                    {/* City/Municipality */}
+                    <select
+                      value={addressFields.city}
+                      onChange={(e) => handleAddressFieldChange('city', e.target.value)}
+                      disabled={!addressFields.province}
+                      style={{
+                        width: '100%',
+                        padding: '0.75rem',
+                        border: '1px solid #d1d5db',
+                        borderRadius: '8px',
+                        fontSize: '0.875rem',
+                        marginBottom: '0.5rem',
+                        backgroundColor: addressFields.province ? 'white' : '#f9fafb',
+                        cursor: addressFields.province ? 'pointer' : 'not-allowed'
+                      }}
+                    >
+                      <option value="">Select City/Municipality</option>
+                      {filteredCities.map((city: any) => (
+                        <option key={city.city_code} value={city.city_code}>
+                          {city.city_name}
+                        </option>
+                      ))}
+                    </select>
+
+                    {/* Barangay */}
+                    <select
+                      value={addressFields.barangay}
+                      onChange={(e) => handleAddressFieldChange('barangay', e.target.value)}
+                      disabled={!addressFields.city}
+                      style={{
+                        width: '100%',
+                        padding: '0.75rem',
+                        border: '1px solid #d1d5db',
+                        borderRadius: '8px',
+                        fontSize: '0.875rem',
+                        backgroundColor: addressFields.city ? 'white' : '#f9fafb',
+                        cursor: addressFields.city ? 'pointer' : 'not-allowed'
+                      }}
+                    >
+                      <option value="">Select Barangay</option>
+                      {filteredBarangays.map((barangay: any) => (
+                        <option key={barangay.brgy_code} value={barangay.brgy_code}>
+                          {barangay.brgy_name}
+                        </option>
+                      ))}
+                    </select>
                   </div>
 
                   {/* Default Password Info */}
@@ -2058,25 +2377,153 @@ const StudentManagement: React.FC = () => {
                     />
                   </div>
 
-                  {/* Address */}
+                  {/* Address - Cascading Dropdowns with Current Address Label */}
                   <div>
                     <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#374151' }}>
                       Address
                     </label>
-                    <textarea
-                      name="address"
-                      value={formData.address}
-                      onChange={handleInputChange}
-                      rows={4}
+                    
+                    {/* Current Address Display (Edit Mode Only) */}
+                    {formData.address && (
+                      <div style={{
+                        padding: '0.75rem',
+                        background: '#f0f9ff',
+                        border: '1px solid #bae6fd',
+                        borderRadius: '8px',
+                        marginBottom: '0.75rem',
+                        fontSize: '0.875rem'
+                      }}>
+                        <span style={{ fontWeight: '600', color: '#0369a1' }}>Current Address: </span>
+                        <span style={{ color: '#374151' }}>{formData.address}</span>
+                      </div>
+                    )}
+                    
+                    {/* House No and Street */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                      <input
+                        type="text"
+                        value={addressFields.houseNo}
+                        onChange={(e) => handleAddressFieldChange('houseNo', e.target.value)}
+                        placeholder="House No."
+                        style={{
+                          width: '100%',
+                          padding: '0.75rem',
+                          border: '1px solid #d1d5db',
+                          borderRadius: '8px',
+                          fontSize: '0.875rem'
+                        }}
+                      />
+                      <input
+                        type="text"
+                        value={addressFields.street}
+                        onChange={(e) => handleAddressFieldChange('street', e.target.value)}
+                        placeholder="Street"
+                        style={{
+                          width: '100%',
+                          padding: '0.75rem',
+                          border: '1px solid #d1d5db',
+                          borderRadius: '8px',
+                          fontSize: '0.875rem'
+                        }}
+                      />
+                    </div>
+
+                    {/* Region */}
+                    <select
+                      value={addressFields.region}
+                      onChange={(e) => handleAddressFieldChange('region', e.target.value)}
                       style={{
                         width: '100%',
                         padding: '0.75rem',
                         border: '1px solid #d1d5db',
                         borderRadius: '8px',
-                        fontSize: '1rem',
-                        resize: 'vertical'
+                        fontSize: '0.875rem',
+                        marginBottom: '0.5rem',
+                        backgroundColor: 'white'
                       }}
-                    />
+                    >
+                      <option value="">Select Region</option>
+                      {regionsData.map((region: any) => (
+                        <option key={region.region_code} value={region.region_code}>
+                          {region.region_name}
+                        </option>
+                      ))}
+                    </select>
+
+                    {/* Province */}
+                    <select
+                      value={addressFields.province}
+                      onChange={(e) => handleAddressFieldChange('province', e.target.value)}
+                      disabled={!addressFields.region}
+                      style={{
+                        width: '100%',
+                        padding: '0.75rem',
+                        border: '1px solid #d1d5db',
+                        borderRadius: '8px',
+                        fontSize: '0.875rem',
+                        marginBottom: '0.5rem',
+                        backgroundColor: addressFields.region ? 'white' : '#f9fafb',
+                        cursor: addressFields.region ? 'pointer' : 'not-allowed'
+                      }}
+                    >
+                      <option value="">Select Province</option>
+                      {filteredProvinces.map((province: any) => (
+                        <option key={province.province_code} value={province.province_code}>
+                          {province.province_name}
+                        </option>
+                      ))}
+                    </select>
+
+                    {/* City/Municipality */}
+                    <select
+                      value={addressFields.city}
+                      onChange={(e) => handleAddressFieldChange('city', e.target.value)}
+                      disabled={!addressFields.province}
+                      style={{
+                        width: '100%',
+                        padding: '0.75rem',
+                        border: '1px solid #d1d5db',
+                        borderRadius: '8px',
+                        fontSize: '0.875rem',
+                        marginBottom: '0.5rem',
+                        backgroundColor: addressFields.province ? 'white' : '#f9fafb',
+                        cursor: addressFields.province ? 'pointer' : 'not-allowed'
+                      }}
+                    >
+                      <option value="">Select City/Municipality</option>
+                      {filteredCities.map((city: any) => (
+                        <option key={city.city_code} value={city.city_code}>
+                          {city.city_name}
+                        </option>
+                      ))}
+                    </select>
+
+                    {/* Barangay */}
+                    <select
+                      value={addressFields.barangay}
+                      onChange={(e) => handleAddressFieldChange('barangay', e.target.value)}
+                      disabled={!addressFields.city}
+                      style={{
+                        width: '100%',
+                        padding: '0.75rem',
+                        border: '1px solid #d1d5db',
+                        borderRadius: '8px',
+                        fontSize: '0.875rem',
+                        backgroundColor: addressFields.city ? 'white' : '#f9fafb',
+                        cursor: addressFields.city ? 'pointer' : 'not-allowed'
+                      }}
+                    >
+                      <option value="">Select Barangay</option>
+                      {filteredBarangays.map((barangay: any) => (
+                        <option key={barangay.brgy_code} value={barangay.brgy_code}>
+                          {barangay.brgy_name}
+                        </option>
+                      ))}
+                    </select>
+                    
+                    <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.75rem', color: '#6b7280', fontStyle: 'italic' }}>
+                      Leave fields empty to keep current address. Fill to update.
+                    </p>
                   </div>
                 </div>
 

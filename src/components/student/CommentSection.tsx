@@ -393,8 +393,8 @@ const CommentItem: React.FC<CommentItemProps> = ({
               </button>
             )}
 
-            {/* Edit action */}
-            {canEdit && !isEditing && (
+            {/* Edit action - Commented out per professor's request: students cannot edit their comments */}
+            {/* {canEdit && !isEditing && (
               <button
                 onClick={handleEditClick}
                 style={{
@@ -427,7 +427,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
                 <Edit3 size={isMobile ? 12 : 10} />
                 Edit
               </button>
-            )}
+            )} */}
           </div>
         </div>
       </div>
