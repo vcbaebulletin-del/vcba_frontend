@@ -28,6 +28,7 @@ const StudentManagement: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'inactive'>('active');
+  const [filterGradeLevel, setFilterGradeLevel] = useState<'all' | 11 | 12>('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedStudents, setSelectedStudents] = useState<number[]>([]);
@@ -202,7 +203,10 @@ const StudentManagement: React.FC = () => {
         (filterStatus === 'active' && student.is_active) ||
         (filterStatus === 'inactive' && !student.is_active);
 
-      return matchesSearch && matchesStatus;
+      const matchesGradeLevel = filterGradeLevel === 'all' ||
+        student.profile.grade_level === filterGradeLevel;
+
+      return matchesSearch && matchesStatus && matchesGradeLevel;
     });
 
     // Calculate pagination
@@ -219,7 +223,7 @@ const StudentManagement: React.FC = () => {
       currentPage,
       itemsPerPage
     };
-  }, [students, searchQuery, filterStatus, currentPage, itemsPerPage]);
+  }, [students, searchQuery, filterStatus, filterGradeLevel, currentPage, itemsPerPage]);
 
   // Utility functions
   const getStatusColor = (isActive: boolean) => {
@@ -746,6 +750,12 @@ const StudentManagement: React.FC = () => {
     setCurrentPage(1);
   };
 
+  const handleGradeLevelFilterChange = (value: string) => {
+    const parsedValue = value === 'all' ? 'all' : parseInt(value) as 11 | 12;
+    setFilterGradeLevel(parsedValue);
+    setCurrentPage(1);
+  };
+
   const handleSelectAll = () => {
     if (selectedStudents.length === filteredAndPaginatedData.students.length) {
       setSelectedStudents([]);
@@ -929,6 +939,33 @@ const StudentManagement: React.FC = () => {
             >
               Deactivate ({selectedStudents.length})
             </button>
+          )}
+
+          {/* Grade Level Filter - Only for super_admin */}
+          {permissions.isSuperAdmin && (
+            <div style={{ minWidth: '150px' }}>
+              <select
+                value={filterGradeLevel}
+                onChange={(e) => handleGradeLevelFilterChange(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '0.75rem 1rem',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '8px',
+                  fontSize: '0.9rem',
+                  outline: 'none',
+                  cursor: 'pointer',
+                  backgroundColor: 'white',
+                  transition: 'border-color 0.2s'
+                }}
+                onFocus={(e) => e.currentTarget.style.borderColor = '#3b82f6'}
+                onBlur={(e) => e.currentTarget.style.borderColor = '#d1d5db'}
+              >
+                <option value="all">All Grades</option>
+                <option value="11">Grade 11</option>
+                <option value="12">Grade 12</option>
+              </select>
+            </div>
           )}
 
           {/* Search */}
@@ -1274,6 +1311,7 @@ const StudentManagement: React.FC = () => {
               Showing {filteredAndPaginatedData.students.length} of {filteredAndPaginatedData.totalItems} students
               {searchQuery && ` (filtered by "${searchQuery}")`}
               {filterStatus !== 'all' && ` (${filterStatus} only)`}
+              {permissions.isSuperAdmin && filterGradeLevel !== 'all' && ` (Grade ${filterGradeLevel} only)`}
             </div>
             <div style={{ display: 'flex', gap: '0.5rem' }}>
               <button
