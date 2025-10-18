@@ -447,7 +447,8 @@ const ArchivedCalendarEvents: React.FC<ArchivedCalendarEventsProps> = ({ onResto
                   </div>
                 </div>
 
-                <div style={{
+                {/* Restore button commented out */}
+                {/* <div style={{
                   display: 'flex',
                   gap: '0.5rem',
                   marginLeft: '1rem'
@@ -484,7 +485,7 @@ const ArchivedCalendarEvents: React.FC<ArchivedCalendarEventsProps> = ({ onResto
                     <RotateCcw size={14} />
                     {restoring === event.calendar_id ? 'Restoring...' : 'Restore'}
                   </button>
-                </div>
+                </div> */}
               </div>
             </div>
           ))}

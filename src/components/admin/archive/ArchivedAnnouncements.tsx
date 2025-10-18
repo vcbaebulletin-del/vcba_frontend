@@ -473,7 +473,8 @@ const ArchivedAnnouncements: React.FC<ArchivedAnnouncementsProps> = ({ onRestore
                   </div>
                 </div>
 
-                <div style={{
+                {/* Restore button commented out */}
+                {/* <div style={{
                   display: 'flex',
                   gap: '0.5rem',
                   marginLeft: '1rem'
@@ -511,8 +512,7 @@ const ArchivedAnnouncements: React.FC<ArchivedAnnouncementsProps> = ({ onRestore
                     {restoring === announcement.announcement_id ? 'Restoring...' : 'Restore'}
                   </button>
 
-                  {/* ill comment this buutton delete because I dont use this for now */}
-                  {/* <button
+                  <button
                     onClick={() => handlePermanentDelete(announcement.announcement_id)}
                     disabled={deleting === announcement.announcement_id}
                     style={{
@@ -543,8 +543,8 @@ const ArchivedAnnouncements: React.FC<ArchivedAnnouncementsProps> = ({ onRestore
                   >
                     <Trash2 size={14} />
                     {deleting === announcement.announcement_id ? 'Deleting...' : 'Delete'}
-                  </button> */}
-                </div>
+                  </button>
+                </div> */}
               </div>
             </div>
           ))}

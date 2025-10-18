@@ -163,6 +163,11 @@ interface ReportItem {
   announcement_id?: number;
   calendar_id?: number;
   created_at?: string;
+  event_date?: string;
+  end_date?: string;
+  visibility_end_at?: string;
+  status?: string; // For announcements: draft, pending, published, archived
+  is_active?: number; // For calendar events: 0 or 1
 }
 
 interface ReportTallies {
@@ -604,6 +609,33 @@ const Reports: React.FC = () => {
       console.log('📊 Report Data:', reportData);
       console.log('📊 Tallies:', reportData.report.tallies);
       console.log('📊 Items count:', reportData.report.items.length);
+      
+      // Debug: Log first announcement and calendar event
+      const firstAnnouncement = reportData.report.items.find(item => item.type === 'Announcement');
+      const firstCalendar = reportData.report.items.find(item => item.type === 'Calendar');
+      
+      if (firstAnnouncement) {
+        console.log('📊 [FRONTEND DEBUG] First Announcement - ALL FIELDS:', firstAnnouncement);
+        console.log('📊 [FRONTEND DEBUG] First Announcement - Specific:', {
+          title: firstAnnouncement.title,
+          status: firstAnnouncement.status,
+          visibility_end_at: firstAnnouncement.visibility_end_at,
+          is_active: firstAnnouncement.is_active,
+          all_keys: Object.keys(firstAnnouncement)
+        });
+      }
+      
+      if (firstCalendar) {
+        console.log('📊 [FRONTEND DEBUG] First Calendar Event - ALL FIELDS:', firstCalendar);
+        console.log('📊 [FRONTEND DEBUG] First Calendar Event - Specific:', {
+          title: firstCalendar.title,
+          status: firstCalendar.status,
+          is_active: firstCalendar.is_active,
+          end_date: firstCalendar.end_date,
+          event_date: firstCalendar.event_date,
+          all_keys: Object.keys(firstCalendar)
+        });
+      }
 
       setReportData(reportData);
     } catch (err: any) {
@@ -724,29 +756,41 @@ const Reports: React.FC = () => {
           doc.text('Announcements Details', 20, yPosition);
           yPosition += 15;
 
-          const announcementTableData = announcements.map(item => [
-            item.title,
-            item.content.length > 100 ? item.content.substring(0, 100) + '...' : item.content,
-            item.posted_by_name || `Admin ID: ${item.posted_by || 'N/A'}`,
-            new Date(item.date).toLocaleDateString(),
-            item.category.toUpperCase(),
-            item.images.length > 0 ? `${item.images.length} image(s)` : 'No images'
-          ]);
+          const announcementTableData = announcements.map(item => {
+            // Format status: draft, pending, published, archived
+            let statusDisplay = 'Unknown';
+            if (item.status) {
+              statusDisplay = item.status.charAt(0).toUpperCase() + item.status.slice(1);
+            }
+
+            return [
+              item.title,
+              item.content.length > 100 ? item.content.substring(0, 100) + '...' : item.content,
+              item.posted_by_name || `Admin ID: ${item.posted_by || 'N/A'}`,
+              new Date(item.date).toLocaleDateString(),
+              item.visibility_end_at ? new Date(item.visibility_end_at).toLocaleDateString() : 'No End Date',
+              statusDisplay,
+              item.category.toUpperCase(),
+              item.images.length > 0 ? `${item.images.length} image(s)` : 'No images'
+            ];
+          });
 
           autoTable(doc, {
             startY: yPosition,
-            head: [['Title', 'Content', 'Posted By', 'Date', 'Type', 'Attachments']],
+            head: [['Title', 'Content', 'Posted By', 'Date', 'End Date', 'Status', 'Type', 'Attachments']],
             body: announcementTableData,
             theme: 'striped',
             headStyles: { fillColor: [52, 152, 219], textColor: 255 },
             styles: { fontSize: 8, cellPadding: 3 },
             columnStyles: {
-              0: { cellWidth: 35 }, // Title
-              1: { cellWidth: 50 }, // Content
-              2: { cellWidth: 25 }, // Posted By
-              3: { cellWidth: 25 }, // Date
-              4: { cellWidth: 20 }, // Type
-              5: { cellWidth: 25 }  // Attachments
+              0: { cellWidth: 30 }, // Title
+              1: { cellWidth: 40 }, // Content
+              2: { cellWidth: 22 }, // Posted By
+              3: { cellWidth: 20 }, // Date
+              4: { cellWidth: 20 }, // End Date
+              5: { cellWidth: 18 }, // Status
+              6: { cellWidth: 18 }, // Type
+              7: { cellWidth: 22 }  // Attachments
             }
           });
 
@@ -766,29 +810,41 @@ const Reports: React.FC = () => {
           doc.text('School Calendar Events Details', 20, yPosition);
           yPosition += 15;
 
-          const calendarTableData = calendarEvents.map(item => [
-            item.title,
-            item.content.length > 100 ? item.content.substring(0, 100) + '...' : item.content,
-            item.created_by_name || `Admin ID: ${item.created_by || 'N/A'}`,
-            new Date(item.date).toLocaleDateString(),
-            item.category.toUpperCase(),
-            item.images.length > 0 ? `${item.images.length} image(s)` : 'No images'
-          ]);
+          const calendarTableData = calendarEvents.map(item => {
+            // Format status based on is_active: 0 = Inactive, 1 = Active
+            let statusDisplay = 'Unknown';
+            if (item.is_active !== undefined && item.is_active !== null) {
+              statusDisplay = item.is_active === 1 ? 'Active' : 'Inactive';
+            }
+
+            return [
+              item.title,
+              item.content.length > 100 ? item.content.substring(0, 100) + '...' : item.content,
+              item.created_by_name || `Admin ID: ${item.created_by || 'N/A'}`,
+              item.event_date ? new Date(item.event_date).toLocaleDateString() : new Date(item.date).toLocaleDateString(),
+              item.end_date ? new Date(item.end_date).toLocaleDateString() : 'No End Date',
+              statusDisplay,
+              item.category.toUpperCase(),
+              item.images.length > 0 ? `${item.images.length} image(s)` : 'No images'
+            ];
+          });
 
           autoTable(doc, {
             startY: yPosition,
-            head: [['Title', 'Description', 'Created By', 'Event Date', 'Type', 'Attachments']],
+            head: [['Title', 'Description', 'Created By', 'Event Date', 'End Date', 'Status', 'Type', 'Attachments']],
             body: calendarTableData,
             theme: 'striped',
             headStyles: { fillColor: [46, 125, 50], textColor: 255 },
             styles: { fontSize: 8, cellPadding: 3 },
             columnStyles: {
-              0: { cellWidth: 35 }, // Title
-              1: { cellWidth: 50 }, // Description
-              2: { cellWidth: 25 }, // Created By
-              3: { cellWidth: 25 }, // Event Date
-              4: { cellWidth: 20 }, // Type
-              5: { cellWidth: 25 }  // Attachments
+              0: { cellWidth: 30 }, // Title
+              1: { cellWidth: 40 }, // Description
+              2: { cellWidth: 22 }, // Created By
+              3: { cellWidth: 20 }, // Event Date
+              4: { cellWidth: 20 }, // End Date
+              5: { cellWidth: 18 }, // Status
+              6: { cellWidth: 18 }, // Type
+              7: { cellWidth: 22 }  // Attachments
             }
           });
 
