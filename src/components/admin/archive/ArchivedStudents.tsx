@@ -381,8 +381,9 @@ const ArchivedStudents: React.FC<ArchivedStudentsProps> = ({ onRestoreSuccess })
                         fontSize: '0.875rem',
                         color: '#374151'
                       }}>
+                        {/* TEMPORARY: Display "Username" but backend still uses email field - REVERT IN FUTURE */}
                         <Mail size={16} color="#f59e0b" />
-                        <span style={{ fontWeight: '500' }}>Email:</span>
+                        <span style={{ fontWeight: '500' }}>Username:</span>
                         <span>{student.email}</span>
                       </div>
 

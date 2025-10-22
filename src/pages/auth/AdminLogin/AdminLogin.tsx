@@ -162,17 +162,18 @@ const AdminLogin: React.FC = () => {
             {/* Login Form */}
             <form onSubmit={handleSubmit} className="admin-login__form" noValidate>
               <div className="admin-login__form-group">
-                <label htmlFor="email" className="admin-login__label">Email Address</label>
+                {/* TEMPORARY: Display "Username" but backend still uses email field - REVERT IN FUTURE */}
+                <label htmlFor="email" className="admin-login__label">Username</label>
                 <input
-                  type="email"
+                  type="text"
                   id="email"
                   name="email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  placeholder="Enter your email address"
+                  placeholder="Enter your username"
                   className={`admin-login__input ${formErrors.email ? 'error' : ''}`}
                   disabled={isLoading}
-                  autoComplete="email"
+                  autoComplete="username"
                   required
                 />
                 {formErrors.email && <span className="admin-login__error-text">{formErrors.email}</span>}

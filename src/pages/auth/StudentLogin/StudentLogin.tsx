@@ -139,14 +139,15 @@ const StudentLogin: React.FC = () => {
             {/* Login Form */}
             <form onSubmit={handleSubmit} className="student-login__form" noValidate>
               <div className="student-login__form-group">
-                <label htmlFor="identifier" className="student-login__label">Email or Student Number</label>
+                {/* TEMPORARY: Display "Username or Student Number" but backend still uses email field - REVERT IN FUTURE */}
+                <label htmlFor="identifier" className="student-login__label">Username or Student Number</label>
                 <input
                   type="text"
                   id="identifier"
                   name="identifier"
                   value={formData.identifier}
                   onChange={handleInputChange}
-                  placeholder="Enter your email or student number"
+                  placeholder="Enter your username or student number"
                   className={`student-login__input ${formErrors.identifier ? 'error' : ''}`}
                   disabled={isLoading}
                   autoComplete="username"

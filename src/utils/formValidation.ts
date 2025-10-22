@@ -9,14 +9,22 @@ export interface ValidationResult {
 
 // Field validation functions
 export const validators = {
-  // Email validation
+  // TEMPORARY: Email validation modified to accept username format - REVERT IN FUTURE
+  // Original validation checked for email pattern, now accepts alphanumeric usernames
   email: (value: string): ValidationResult => {
     if (!value?.trim()) {
-      return { isValid: false, error: 'Email is required' };
+      return { isValid: false, error: 'Username is required' };
     }
     
-    if (!VALIDATION_RULES.EMAIL.PATTERN.test(value.trim())) {
-      return { isValid: false, error: 'Please enter a valid email address' };
+    // TEMPORARY: Accept username format (alphanumeric with underscores)
+    // Original: if (!VALIDATION_RULES.EMAIL.PATTERN.test(value.trim()))
+    const usernamePattern = /^[a-zA-Z0-9_]+$/;
+    if (!usernamePattern.test(value.trim())) {
+      return { isValid: false, error: 'Username can only contain letters, numbers, and underscores' };
+    }
+    
+    if (value.trim().length < 3) {
+      return { isValid: false, error: 'Username must be at least 3 characters long' };
     }
     
     return { isValid: true };
@@ -166,7 +174,7 @@ export interface FormErrors {
 export const validateRegistrationForm = (data: AdminRegistrationFormData): FormErrors => {
   const errors: FormErrors = {};
 
-  // Email validation
+  // TEMPORARY: Username validation (using email field) - REVERT IN FUTURE
   const emailResult = validators.email(data.email);
   if (!emailResult.isValid) {
     errors.email = emailResult.error!;
@@ -241,6 +249,7 @@ export const hasFormErrors = (errors: FormErrors): boolean => {
 // Utility to clean form data
 export const cleanFormData = (data: AdminRegistrationFormData): AdminRegistrationData => {
   return {
+    // TEMPORARY: Clean username but store in email field - REVERT IN FUTURE
     email: data.email.trim().toLowerCase(),
     password: data.password,
     firstName: data.firstName.trim(),

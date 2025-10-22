@@ -399,6 +399,7 @@ const ArchivedAdmins: React.FC<ArchivedAdminsProps> = ({ onRestoreSuccess }) => 
                         Inactive
                       </span>
                     </div>
+                    {/* TEMPORARY: Displays username but stored in email field - REVERT IN FUTURE */}
                     <p style={{
                       margin: 0,
                       fontSize: '0.875rem',

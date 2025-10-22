@@ -403,7 +403,7 @@ const AdminManagement: React.FC = () => {
             }} />
             <input
               type="text"
-              placeholder="Search admins by name or email..."
+              placeholder="Search admins by name or username..."
               value={searchQuery}
               onChange={handleSearchChange}
               style={{

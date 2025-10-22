@@ -300,16 +300,17 @@ const UnifiedLogin: React.FC = () => {
             {/* Login Form */}
             <form onSubmit={handleSubmit} className="unified-login__form" noValidate>
               <div className="unified-login__form-group">
+                {/* TEMPORARY: Display "Username" but backend still uses email field - REVERT IN FUTURE */}
                 <label htmlFor="identifier" className="unified-login__label">
-                  Email Address
+                  Username
                 </label>
                 <input
-                  type="email"
+                  type="text"
                   id="identifier"
                   name="identifier"
                   value={formData.identifier}
                   onChange={handleInputChange}
-                  placeholder={inputPlaceholder}
+                  placeholder="Enter your username"
                   className={`unified-login__input ${formErrors.identifier ? 'error' : ''}`}
                   disabled={isLoading}
                   autoComplete="username"

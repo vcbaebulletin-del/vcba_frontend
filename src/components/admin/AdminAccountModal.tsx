@@ -75,11 +75,13 @@ const AdminAccountModal: React.FC<AdminAccountModalProps> = ({
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
-    // Email validation
+    // TEMPORARY: Username validation (using email field) - REVERT IN FUTURE
     if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email address';
+      newErrors.email = 'Username is required';
+    } else if (!/^[a-zA-Z0-9_]+$/.test(formData.email)) {
+      newErrors.email = 'Username can only contain letters, numbers, and underscores';
+    } else if (formData.email.length < 3) {
+      newErrors.email = 'Username must be at least 3 characters long';
     }
 
     // Password validation (only for new admins)
@@ -358,11 +360,12 @@ const AdminAccountModal: React.FC<AdminAccountModalProps> = ({
                 color: '#374151',
                 marginBottom: '0.5rem'
               }}>
+                {/* TEMPORARY: Display "Username" but backend still uses email field - REVERT IN FUTURE */}
                 <Mail size={16} style={{ display: 'inline', marginRight: '0.5rem' }} />
-                Email Address *
+                Username *
               </label>
               <input
-                type="email"
+                type="text"
                 value={formData.email}
                 onChange={(e) => handleInputChange('email', e.target.value)}
                 style={{
@@ -372,7 +375,7 @@ const AdminAccountModal: React.FC<AdminAccountModalProps> = ({
                   borderRadius: '6px',
                   fontSize: '0.875rem'
                 }}
-                placeholder="admin@example.com"
+                placeholder="username123"
               />
               {errors.email && (
                 <p style={{ margin: '0.25rem 0 0', fontSize: '0.75rem', color: '#ef4444' }}>

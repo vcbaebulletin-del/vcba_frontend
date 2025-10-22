@@ -234,7 +234,7 @@ const StudentManagement: React.FC = () => {
     return isActive ? 'Active' : 'Inactive';
   };
 
-  // Email generation function
+  // TEMPORARY: Email generation function - generates username format but stores in email field - REVERT IN FUTURE
   const generateEmail = (studentNumber: string, gradeLevel: string, lastName: string, firstName: string, middleName: string) => {
     if (!studentNumber || !gradeLevel || !lastName || !firstName) {
       return '';
@@ -244,8 +244,9 @@ const StudentManagement: React.FC = () => {
     const middleInitial = middleName ? middleName.charAt(0).toUpperCase() : '';
     const cleanLastName = lastName.replace(/\s+/g, '').toLowerCase();
 
-    // the grade level will be remove, and then we will not using @gmail.com but instead @vcba.com
-    return `${studentNumber}_${cleanLastName}_${firstLetter}_${middleInitial}@vcba.com`;
+    // TEMPORARY: Generate username format (remove @vcba.com for username) - REVERT IN FUTURE
+    // Original: return `${studentNumber}_${cleanLastName}_${firstLetter}_${middleInitial}@vcba.com`;
+    return `vcba_${studentNumber}_${gradeLevel}_${cleanLastName}_${firstLetter}`;
   };
 
   // Form handlers
@@ -434,13 +435,17 @@ const StudentManagement: React.FC = () => {
     try {
       // Validate required fields
       if (!formData.studentNumber || !formData.email || !formData.firstName || !formData.lastName || !formData.phoneNumber || !formData.gradeLevel) {
-        throw new Error('Please fill in all required fields (First Name, Last Name, Student Number, Email, Phone, Grade Level, Section)');
+        throw new Error('Please fill in all required fields (First Name, Last Name, Student Number, Username, Phone, Grade Level, Section)');
       }
 
-      // Validate email format
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(formData.email)) {
-        throw new Error('Please enter a valid email address');
+      // TEMPORARY: Validate username format instead of email - REVERT IN FUTURE
+      // Original: const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const usernameRegex = /^[a-zA-Z0-9_]+$/;
+      if (!usernameRegex.test(formData.email)) {
+        throw new Error('Username can only contain letters, numbers, and underscores');
+      }
+      if (formData.email.length < 3) {
+        throw new Error('Username must be at least 3 characters long');
       }
 
       // Validate suffix if provided
@@ -583,13 +588,17 @@ const StudentManagement: React.FC = () => {
     try {
       // Validate required fields
       if (!formData.studentNumber || !formData.email || !formData.firstName || !formData.lastName || !formData.phoneNumber) {
-        throw new Error('Please fill in all required fields (First Name, Last Name, Student Number, Email, Phone)');
+        throw new Error('Please fill in all required fields (First Name, Last Name, Student Number, Username, Phone)');
       }
 
-      // Validate email format
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(formData.email)) {
-        throw new Error('Please enter a valid email address');
+      // TEMPORARY: Validate username format instead of email - REVERT IN FUTURE
+      // Original: const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const usernameRegex = /^[a-zA-Z0-9_]+$/;
+      if (!usernameRegex.test(formData.email)) {
+        throw new Error('Username can only contain letters, numbers, and underscores');
+      }
+      if (formData.email.length < 3) {
+        throw new Error('Username must be at least 3 characters long');
       }
 
       // Validate suffix if provided
@@ -1110,7 +1119,8 @@ const StudentManagement: React.FC = () => {
           <div>Photo</div>
           <div>Student #</div>
           <div>Name</div>
-          <div>Email</div>
+          {/* TEMPORARY: Display "Username" but backend still uses email field - REVERT IN FUTURE */}
+          <div>Username</div>
           <div>Grade</div>
           <div>Phone</div>
           <div>Status</div>
@@ -1542,13 +1552,13 @@ const StudentManagement: React.FC = () => {
                     />
                   </div>
 
-                  {/* Email */}
+                  {/* TEMPORARY: Display "Username" but backend still uses email field - REVERT IN FUTURE */}
                   <div>
                     <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#374151' }}>
-                      Email Address * (Auto-generated)
+                      Username * (Auto-generated)
                     </label>
                     <input
-                      type="email"
+                      type="text"
                       name="email"
                       value={formData.email}
                       readOnly
@@ -1562,7 +1572,7 @@ const StudentManagement: React.FC = () => {
                         backgroundColor: '#f9fafb',
                         color: '#6b7280'
                       }}
-                      placeholder="Email will be auto-generated based on student details"
+                      placeholder="Username will be auto-generated based on student details"
                     />
                   </div>
 
@@ -2190,13 +2200,13 @@ const StudentManagement: React.FC = () => {
                     />
                   </div>
 
-                  {/* Email */}
+                  {/* TEMPORARY: Display "Username" but backend still uses email field - REVERT IN FUTURE */}
                   <div>
                     <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#374151' }}>
-                      Email Address * (Auto-generated)
+                      Username * (Auto-generated)
                     </label>
                     <input
-                      type="email"
+                      type="text"
                       name="email"
                       value={formData.email}
                       readOnly

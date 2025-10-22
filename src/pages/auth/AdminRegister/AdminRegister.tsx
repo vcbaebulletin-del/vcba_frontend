@@ -300,9 +300,10 @@ const AdminRegister: React.FC = () => {
             <div className="form-section">
               <h3>Contact Information</h3>
               <div className="form-group">
-                <label htmlFor="email">Email Address *</label>
+                {/* TEMPORARY: Display "Username" but backend still uses email field - REVERT IN FUTURE */}
+                <label htmlFor="email">Username *</label>
                 <input
-                  type="email"
+                  type="text"
                   id="email"
                   name="email"
                   value={formData.email}
