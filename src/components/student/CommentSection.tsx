@@ -8,6 +8,7 @@ import {
   shouldShowReplyButton,
   calculateIndentation
 } from '../../utils/commentDepth';
+import { validateCommentText } from '../../utils/badWordFilter';
 
 interface CommentSectionProps {
   announcementId?: number;
@@ -82,6 +83,13 @@ const CommentItem: React.FC<CommentItemProps> = ({
 
   const handleEditSave = async () => {
     if (editText.trim() && editText.trim() !== comment.comment_text) {
+      // Validate for bad words
+      const validationError = validateCommentText(editText.trim());
+      if (validationError) {
+        alert(validationError);
+        return;
+      }
+
       try {
         await onEdit(comment.comment_id, editText.trim());
         setIsEditing(false);
@@ -511,6 +519,13 @@ const CommentForm: React.FC<CommentFormProps> = ({
     e.preventDefault();
     
     if (!commentText.trim()) return;
+
+    // Validate for bad words
+    const validationError = validateCommentText(commentText.trim());
+    if (validationError) {
+      alert(validationError);
+      return;
+    }
 
     try {
       setIsSubmitting(true);

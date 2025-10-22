@@ -1538,7 +1538,7 @@ const StudentManagement: React.FC = () => {
                         borderRadius: '8px',
                         fontSize: '1rem'
                       }}
-                      placeholder="e.g., 2025-0001"
+                      placeholder="e.g., 20250001"
                     />
                   </div>
 
