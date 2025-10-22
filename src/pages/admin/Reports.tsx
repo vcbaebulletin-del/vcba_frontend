@@ -163,11 +163,16 @@ interface ReportItem {
   announcement_id?: number;
   calendar_id?: number;
   created_at?: string;
+  visibility_start_at?: string;
   event_date?: string;
   end_date?: string;
   visibility_end_at?: string;
   status?: string; // For announcements: draft, pending, published, archived
+  derived_status?: string; // Derived status from backend based on deleted_at, archived_at, is_active, is_holiday
   is_active?: number; // For calendar events: 0 or 1
+  is_holiday?: number; // For calendar events: 0 or 1 (1 = holiday, should never be archived)
+  deleted_at?: string | null;
+  archived_at?: string | null;
 }
 
 interface ReportTallies {
@@ -757,9 +762,12 @@ const Reports: React.FC = () => {
           yPosition += 15;
 
           const announcementTableData = announcements.map(item => {
-            // Format status: draft, pending, published, archived
+            // Use derived_status from backend which already handles deleted_at, archived_at logic
             let statusDisplay = 'Unknown';
-            if (item.status) {
+            if (item.derived_status) {
+              statusDisplay = item.derived_status;
+            } else if (item.status) {
+              // Fallback to raw status if derived_status is not available
               statusDisplay = item.status.charAt(0).toUpperCase() + item.status.slice(1);
             }
 
@@ -767,7 +775,7 @@ const Reports: React.FC = () => {
               item.title,
               item.content.length > 100 ? item.content.substring(0, 100) + '...' : item.content,
               item.posted_by_name || `Admin ID: ${item.posted_by || 'N/A'}`,
-              new Date(item.date).toLocaleDateString(),
+              new Date(item.date).toLocaleDateString(), // This now uses visibility_start_at from backend
               item.visibility_end_at ? new Date(item.visibility_end_at).toLocaleDateString() : 'No End Date',
               statusDisplay,
               item.category.toUpperCase(),
@@ -777,7 +785,7 @@ const Reports: React.FC = () => {
 
           autoTable(doc, {
             startY: yPosition,
-            head: [['Title', 'Content', 'Posted By', 'Date Created', 'End Date', 'Status', 'Type', 'Attachments']],
+            head: [['Title', 'Content', 'Posted By', 'Visibility Start', 'Visibility End', 'Status', 'Type', 'Attachments']],
             body: announcementTableData,
             theme: 'striped',
             headStyles: { fillColor: [52, 152, 219], textColor: 255 },
@@ -811,9 +819,12 @@ const Reports: React.FC = () => {
           yPosition += 15;
 
           const calendarTableData = calendarEvents.map(item => {
-            // Format status based on is_active: 0 = Inactive, 1 = Active
+            // Use derived_status from backend which already handles deleted_at and is_active logic
             let statusDisplay = 'Unknown';
-            if (item.is_active !== undefined && item.is_active !== null) {
+            if (item.derived_status) {
+              statusDisplay = item.derived_status;
+            } else if (item.is_active !== undefined && item.is_active !== null) {
+              // Fallback to is_active if derived_status is not available
               statusDisplay = item.is_active === 1 ? 'Active' : 'Inactive';
             }
 
@@ -821,7 +832,7 @@ const Reports: React.FC = () => {
               item.title,
               item.content.length > 100 ? item.content.substring(0, 100) + '...' : item.content,
               item.created_by_name || `Admin ID: ${item.created_by || 'N/A'}`,
-              item.event_date ? new Date(item.event_date).toLocaleDateString() : new Date(item.date).toLocaleDateString(),
+              item.event_date ? new Date(item.event_date).toLocaleDateString() : (item.date ? new Date(item.date).toLocaleDateString() : 'N/A'), // Explicitly use event_date
               item.end_date ? new Date(item.end_date).toLocaleDateString() : 'No End Date',
               statusDisplay,
               item.category.toUpperCase(),
