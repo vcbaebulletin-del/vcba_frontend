@@ -247,7 +247,7 @@ const StudentManagement: React.FC = () => {
     // TEMPORARY: Generate username format (remove @vcba.com for username) - REVERT IN FUTURE
     // Original: return `${studentNumber}_${cleanLastName}_${firstLetter}_${middleInitial}@vcba.com`;
     //please be aware
-    return `vcba_${studentNumber}_${gradeLevel}_${cleanLastName}_${firstLetter}`;
+    return `vcba_${studentNumber}_${cleanLastName}_${firstLetter}`;
   };
 
   // Form handlers
