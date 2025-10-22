@@ -246,6 +246,7 @@ const StudentManagement: React.FC = () => {
 
     // TEMPORARY: Generate username format (remove @vcba.com for username) - REVERT IN FUTURE
     // Original: return `${studentNumber}_${cleanLastName}_${firstLetter}_${middleInitial}@vcba.com`;
+    //please be aware
     return `vcba_${studentNumber}_${gradeLevel}_${cleanLastName}_${firstLetter}`;
   };
 
@@ -508,7 +509,8 @@ const StudentManagement: React.FC = () => {
         }
       }
 
-      alert(`Student account created successfully!\n\nStudent Details:\nName: ${createdStudent.profile.full_name}\nStudent Number: ${createdStudent.student_number}\nEmail: ${createdStudent.email}\n\nLogin Credentials:\nEmail: ${createdStudent.email}\nPassword: Student123\n\nPlease share these credentials with the student and ask them to change the password on first login.`);
+      // TEMPORARY: Display "Username" instead of "Email" - REVERT IN FUTURE
+      alert(`Student account created successfully!\n\nStudent Details:\nName: ${createdStudent.profile.full_name}\nStudent Number: ${createdStudent.student_number}\nUsername: ${createdStudent.email}\n\nLogin Credentials:\nUsername: ${createdStudent.email}\nPassword: Student123\n\nPlease share these credentials with the student and ask them to change the password on first login.`);
 
       resetForm();
       setShowCreateModal(false);
